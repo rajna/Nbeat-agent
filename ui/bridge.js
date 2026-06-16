@@ -458,10 +458,30 @@ function buildNBeatPrompt(style, template, workDir) {
 
   let beatmakestep = fs.readFileSync(beatmakestepPath, "utf-8");
 
+  // ── CRITICAL: execution directive at TOP so LLM sees it first ──
+  const isWin = process.platform === "win32";
+  const pythonCmd = isWin ? "python" : "python3";
+  const executionDirective = `# ⚠️ 你必须立即开始执行以下音乐制作任务！
+
+你需要依次完成：
+1. 使用 read 工具读取下方的知识库文件（目录A/B/C/D）
+2. 按照下方 beatmakestep 工作流的每个阶段逐步执行
+3. 将 Beat 设计文档写入 Beat_Design.md
+4. 将 Suno AI prompt 写入 Suno_Prompt.txt  
+5. 将 Python 合成代码写入 generate_beat.py
+6. 执行 ${pythonCmd} generate_beat.py 生成 MIDI + WAV
+
+不要只是阅读这些指令！立即开始执行！不要问任何问题！
+
+---
+
+`;
+
   // Inject KB file paths so LLM knows where to find them
   const kbDir = path.join(NBEAT_DIR, "skills", "nbeat", "meta-music-skill");
-  const kbContext = `\n知识库文件路径:\n- 目录A_元技巧与算子目录: ${kbDir}/A_元技巧与算子目录.md\n- 目录B_参数值空间: ${kbDir}/B_参数值空间.md\n- 目录C_复合元技巧与复合算子目录: ${kbDir}/C_复合元技巧与复合算子目录.md\n- 目录D_复合算子参数值空间: ${kbDir}/D_复合算子参数值空间.md\n`;
-  beatmakestep = kbContext + "\n" + beatmakestep;
+  const kbContext = `知识库文件路径:\n- 目录A_元技巧与算子目录: ${kbDir}/A_元技巧与算子目录.md\n- 目录B_参数值空间: ${kbDir}/B_参数值空间.md\n- 目录C_复合元技巧与复合算子目录: ${kbDir}/C_复合元技巧与复合算子目录.md\n- 目录D_复合算子参数值空间: ${kbDir}/D_复合算子参数值空间.md\n\n---\n\n`;
+
+  beatmakestep = executionDirective + kbContext + beatmakestep;
 
   // Inject user's style requirement
   beatmakestep = beatmakestep.replace(
@@ -497,14 +517,7 @@ function buildNBeatPrompt(style, template, workDir) {
     );
   }
 
-  // Add instruction to execute Python and produce deliverables in work dir
-  beatmakestep += `\n\n---\n## 执行指令\n`;
-  beatmakestep += `- 所有文档和代码写入当前工作目录\n`;
-  beatmakestep += `- Beat设计文档保存为 Beat_Design.md\n`;
-  beatmakestep += `- Suno prompt 保存为 Suno_Prompt.txt\n`;
-  beatmakestep += `- Python代码保存为 generate_beat.py\n`;
-  beatmakestep += `- 执行 python3 generate_beat.py 生成 MIDI + WAV\n`;
-  beatmakestep += `- 全自动执行，不要询问确认\n`;
+  // Template file not found or no template — placeholder already handled above.
 
   return beatmakestep;
 }
