@@ -30,36 +30,29 @@ NBeat Agent turns pi into a professional beat maker. Describe a style, pick a te
                             🎵 Beat Design + MIDI + WAV
 ```
 
-## Quick Start
 
-### For Everyone (recommended)
 
-```bash
-# One command — installs nbeat-agent + pi coding agent together
-npm install -g nbeat-agent
-
-# 🎛️  Web UI (recommended for beginners)
-nbeat ui                     # Opens browser at http://localhost:8080
-
-# ⌨️  CLI mode (terminal)
-nbeat                        # Interactive beat making
-nbeat -p "Bad Guy by Billie Eilish style, dark pop, G harmonic minor"
-```
-
-> `nbeat` = pi coding agent with nbeat-agent extension pre-loaded. All pi arguments work (`-p`, `-c`, `--model`, etc).
-
-### For Existing pi Users
-
-```bash
-# Install nbeat-agent as a pi package
-pi install npm:nbeat-agent
-
-# Or from git
-pi install git:github.com/yourname/nbeat-agent
-
-# Or try without installing
-pi -e /path/to/nbeat-agent/src/index.ts
-```
+ ## Quick Install                                                                                    
+                                                                                                       
+   ### With pi                                                                                         
+   ```bash                                                                                             
+   pi install git:github.com/你的用户名/nbeat-agent                                                    
+ ```                                                                                                   
+                                                                                                       
+ ### Without pi                                                                                        
+                                                                                                       
+ ```bash                                                                                               
+   git clone https://github.com/你的用户名/nbeat-agent                                                 
+   cd nbeat-agent && npm install && npm link                                                           
+   nbeat ui                                                                                            
+ ```                                                                                                   
+                                                                                                       
+ Requirements                                                                                          
+                                                                                                       
+ - Node.js 18+                                                                                         
+ - Python 3.8+                                                                                         
+ - LLM API key (Anthropic recommended)                                                                 
+ ```                                    
 
 ### Launch Web UI
 
