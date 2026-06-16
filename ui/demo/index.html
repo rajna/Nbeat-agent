@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NBeat — AI Beat Maker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Animated background -->
+  <div class="bg-aurora" aria-hidden="true">
+    <div class="aurora-blob blob-1"></div>
+    <div class="aurora-blob blob-2"></div>
+    <div class="aurora-blob blob-3"></div>
+  </div>
+
+  <!-- Top navigation -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="#" class="brand">
+        <span class="brand-mark">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18V5l12-2v13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="6" cy="18" r="3" stroke="currentColor" stroke-width="2"/>
+            <circle cx="18" cy="16" r="3" stroke="currentColor" stroke-width="2"/>
+          </svg>
+        </span>
+        <span class="brand-name">nbeat</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#" class="nav-link active">Home</a>
+        <a href="#" class="nav-link">Explore</a>
+        <a href="#" class="nav-link">Library</a>
+        <a href="#" class="nav-link">Pricing</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="btn btn-ghost" id="templatesBtn">📁 Templates</button>
+        <button class="btn btn-primary" id="connectBtn">🔌 Connect</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="main">
+    <section class="hero">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        <span>v1.0 · AI Beat Maker powered by Meta-Music Techniques</span>
+      </div>
+      <h1 class="hero-title">
+        Craft professional<br />
+        <span class="hero-title-grad">beats</span>
+      </h1>
+      <p class="hero-sub">
+        Describe your style, pick a template, and let NBeat's meta-music AI design a complete beat — with MIDI and WAV output.
+      </p>
+
+      <!-- Prompt card -->
+      <div class="prompt-card">
+        <div class="mode-tabs" role="tablist">
+          <button class="mode-tab active" data-mode="beat" role="tab">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 18V5l12-2v13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="6" cy="18" r="3" stroke="currentColor" stroke-width="2"/>
+              <circle cx="18" cy="16" r="3" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            Beat
+          </button>
+          <button class="mode-tab" data-mode="melody" role="tab">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 18V5l12-2v13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Melody
+          </button>
+          <button class="mode-tab" data-mode="fullsong" role="tab">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zM19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Full Song
+          </button>
+        </div>
+
+        <textarea
+          class="prompt-input"
+          id="promptInput"
+          rows="4"
+          placeholder="Bad Guy by Billie Eilish style, dark pop, G harmonic minor, 135 BPM, deep 808 bass, minimal beat…"
+        ></textarea>
+
+        <div id="templatePreview" class="template-preview" style="display:none"></div>
+
+        <div class="prompt-toolbar">
+          <div class="toolbar-left">
+            <button class="chip" id="styleChip">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 18V5l12-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM21 16a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span id="styleChipLabel">Style: Dark Pop</span>
+            </button>
+            <button class="chip" id="templateChip" title="Select a melody template JSON">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span id="templateChipLabel">Template: None</span>
+            </button>
+            <button class="chip chip-icon" id="moreOptsBtn" title="More options">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+          <div class="toolbar-right">
+            <span id="wsStatus" class="ws-status disconnected">⚫ Disconnected</span>
+            <button class="btn btn-secondary" id="copyPromptBtn">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 16H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2M16 12h2a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Copy Prompt
+            </button>
+            <button class="btn btn-create" id="createBtn">
+              <span class="create-icon">🎧</span>
+              <span>Create Beat</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Template selector modal -->
+      <div id="templateModal" class="modal" style="display:none">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>📁 Select Template</h3>
+            <button id="closeTemplateModal" class="modal-close">✕</button>
+          </div>
+          <div id="templateList" class="template-list"></div>
+        </div>
+      </div>
+
+      <!-- Progress panel -->
+      <div id="progressPanel" class="progress-panel" style="display:none">
+        <div class="progress-header">
+          <span class="progress-stage" id="progressStage">🎧 Ready</span>
+          <span class="progress-job" id="progressJob"></span>
+        </div>
+        <div class="progress-log" id="progressLog"></div>
+      </div>
+
+      <!-- Results panel -->
+      <div id="resultsPanel" class="results-panel" style="display:none">
+        <h3>🎉 Beat Generated!</h3>
+        <div id="resultsFiles"></div>
+        <div class="results-actions">
+          <button class="btn btn-primary" id="playWavBtn">▶ Play WAV</button>
+          <button class="btn btn-secondary" id="downloadMidiBtn">⬇ Download MIDI</button>
+        </div>
+      </div>
+
+      <!-- Example prompt chips -->
+      <div class="example-chips">
+        <span class="example-label">Try</span>
+        <button class="example-chip" data-style="Bad Guy by Billie Eilish style, dark pop, G harmonic minor, 135 BPM, deep 808 bass">🎵 Bad Guy style dark pop</button>
+        <button class="example-chip" data-style="Lo-fi hip hop beat, chill, 85 BPM, warm Rhodes, dusty drums, vinyl crackle">🍃 Lo-fi hip hop</button>
+        <button class="example-chip" data-style="Trap beat, aggressive, 140 BPM, hard 808 slides, dark melody, hi-hat rolls">🔥 Trap beat</button>
+        <button class="example-chip" data-style="Synthwave retro beat, 120 BPM, analog synths, gated reverb drums, arpeggiated bass">🌴 Synthwave</button>
+      </div>
+    </section>
+
+    <!-- Recent creations grid -->
+    <section class="library">
+      <div class="section-head">
+        <h2>From the community</h2>
+        <a href="#" class="section-link">Explore all →
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+
+      <div class="song-grid">
+        <article class="song-card" style="--card-grad: linear-gradient(135deg, #ff6b6b, #ffa726);">
+          <div class="song-art">
+            <button class="play-btn" aria-label="Play">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </button>
+            <div class="song-wave">
+              <span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="song-info">
+            <h3 class="song-title">Midnight in Tokyo</h3>
+            <p class="song-meta">synthwave · 3:42 · by @neon_drift</p>
+          </div>
+        </article>
+
+        <article class="song-card" style="--card-grad: linear-gradient(135deg, #5b86e5, #36d1dc);">
+          <div class="song-art">
+            <button class="play-btn" aria-label="Play">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </button>
+            <div class="song-wave">
+              <span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="song-info">
+            <h3 class="song-title">Velvet Sky</h3>
+            <p class="song-meta">r&amp;b · 4:08 · by @ari_mae</p>
+          </div>
+        </article>
+
+        <article class="song-card" style="--card-grad: linear-gradient(135deg, #11998e, #38ef7d);">
+          <div class="song-art">
+            <button class="play-btn" aria-label="Play">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </button>
+            <div class="song-wave">
+              <span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="song-info">
+            <h3 class="song-title">Forest Hymn</h3>
+            <p class="song-meta">folk · 3:21 · by @willow_song</p>
+          </div>
+        </article>
+
+        <article class="song-card" style="--card-grad: linear-gradient(135deg, #a445b2, #d41872, #ff6f91);">
+          <div class="song-art">
+            <button class="play-btn" aria-label="Play">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </button>
+            <div class="song-wave">
+              <span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="song-info">
+            <h3 class="song-title">Neon Heart</h3>
+            <p class="song-meta">pop · 2:58 · by @kai.lu</p>
+          </div>
+        </article>
+
+        <article class="song-card" style="--card-grad: linear-gradient(135deg, #232526, #414345);">
+          <div class="song-art">
+            <button class="play-btn" aria-label="Play">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </button>
+            <div class="song-wave">
+              <span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="song-info">
+            <h3 class="song-title">Iron Pulse</h3>
+            <p class="song-meta">cinematic · 4:15 · by @obsidian_fx</p>
+          </div>
+        </article>
+
+        <article class="song-card" style="--card-grad: linear-gradient(135deg, #f7971e, #ffd200);">
+          <div class="song-art">
+            <button class="play-btn" aria-label="Play">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </button>
+            <div class="song-wave">
+              <span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="song-info">
+            <h3 class="song-title">Golden Hour</h3>
+            <p class="song-meta">acoustic · 3:03 · by @maya_ok</p>
+          </div>
+        </article>
+
+        <article class="song-card" style="--card-grad: linear-gradient(135deg, #654ea3, #eaafc8);">
+          <div class="song-art">
+            <button class="play-btn" aria-label="Play">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </button>
+            <div class="song-wave">
+              <span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="song-info">
+            <h3 class="song-title">Lavender Ghost</h3>
+            <p class="song-meta">dream pop · 3:47 · by @soft_static</p>
+          </div>
+        </article>
+
+        <article class="song-card" style="--card-grad: linear-gradient(135deg, #00b09b, #96c93d);">
+          <div class="song-art">
+            <button class="play-btn" aria-label="Play">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </button>
+            <div class="song-wave">
+              <span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="song-info">
+            <h3 class="song-title">Verdant</h3>
+            <p class="song-meta">lo-fi · 2:39 · by @tofu_loop</p>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="brand-mark">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18V5l12-2v13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="6" cy="18" r="3" stroke="currentColor" stroke-width="2"/>
+            <circle cx="18" cy="16" r="3" stroke="currentColor" stroke-width="2"/>
+          </svg>
+        </span>
+        <span>nbeat © 2026 · AI Beat Maker</span>
+      </div>
+      <div class="footer-links">
+        <a href="#">Terms</a>
+        <a href="#">Privacy</a>
+        <a href="#">Status</a>
+        <a href="#">Help</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    // Inject additional NBeat-specific CSS
+    const nbeatCSS = `
+.ws-status { font-size:12px; padding:4px 10px; border-radius:999px; font-weight:500; }
+.ws-status.connected { background:rgba(0,255,136,0.15); color:#00ff88; }
+.ws-status.disconnected { background:rgba(255,255,255,0.05); color:#7a7a7a; }
+.ws-status.error { background:rgba(255,107,107,0.15); color:#ff6b6b; }
+
+.modal { position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px); z-index:200; display:flex; align-items:center; justify-content:center; }
+.modal-content { background:var(--surface); border:1px solid var(--border-strong); border-radius:20px; padding:24px; max-width:480px; width:90%; max-height:70vh; overflow-y:auto; }
+.modal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.modal-header h3 { font-size:18px; font-weight:700; }
+.modal-close { width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,0.06); font-size:16px; transition:all 0.15s; }
+.modal-close:hover { background:rgba(255,255,255,0.12); }
+
+.template-item { padding:14px 16px; border:1px solid var(--border); border-radius:12px; margin-bottom:8px; cursor:pointer; transition:all 0.2s; }
+.template-item:hover { border-color: var(--border-strong); background:rgba(255,255,255,0.03); }
+.template-item.selected { border-color: var(--accent-2); background:rgba(0,255,136,0.06); }
+.template-item-name { font-weight:600; font-size:14px; color:var(--text); }
+.template-item-meta { font-size:12px; color:var(--text-3); margin-top:4px; }
+
+.template-preview { padding:10px 14px; margin:8px 0; background:rgba(0,255,136,0.06); border:1px solid rgba(0,255,136,0.2); border-radius:10px; font-size:12px; color:var(--text-2); }
+.template-preview .tp-name { font-weight:600; color:var(--accent-2); }
+.template-preview .tp-remove { float:right; cursor:pointer; color:var(--text-3); }
+
+.progress-panel { margin-top:24px; background:var(--surface); border:1px solid var(--border-strong); border-radius:16px; padding:16px 20px; max-width:720px; margin-left:auto; margin-right:auto; }
+.progress-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.progress-stage { font-weight:600; font-size:14px; color:var(--accent-2); }
+.progress-job { font-size:12px; color:var(--text-3); }
+.progress-log { max-height:240px; overflow-y:auto; font-size:12px; color:var(--text-2); font-family:'SF Mono','Fira Code',monospace; line-height:1.6; }
+.progress-log .log-line { padding:2px 0; border-bottom:1px solid rgba(255,255,255,0.02); }
+
+.results-panel { margin-top:24px; background:var(--surface); border:1px solid rgba(0,255,136,0.2); border-radius:16px; padding:20px 24px; max-width:720px; margin-left:auto; margin-right:auto; text-align:center; }
+.results-panel h3 { font-size:22px; font-weight:700; margin-bottom:16px; color:var(--accent-2); }
+.results-actions { display:flex; gap:10px; justify-content:center; margin-top:16px; }
+
+.file-item { padding:10px 14px; border:1px solid var(--border); border-radius:10px; margin-bottom:6px; display:flex; align-items:center; justify-content:space-between; font-size:13px; }
+.file-item .fi-name { font-weight:500; }
+.file-item .fi-size { color:var(--text-3); font-size:11px; }
+.file-item .fi-type { padding:2px 8px; border-radius:4px; font-size:10px; font-weight:600; text-transform:uppercase; }
+.fi-type.wav { background:rgba(0,255,136,0.15); color:#00ff88; }
+.fi-type.midi { background:rgba(255,200,0,0.15); color:#ffc800; }
+.fi-type.doc { background:rgba(100,180,255,0.15); color:#64b4ff; }
+`;
+    const styleTag = document.createElement('style');
+    styleTag.textContent = nbeatCSS;
+    document.head.appendChild(styleTag);
+  </script>
+</body>
+</html>

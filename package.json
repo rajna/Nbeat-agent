@@ -1,0 +1,56 @@
+{
+  "name": "nbeat-agent",
+  "version": "1.0.0",
+  "description": "NBeat Music Agent - AI beat maker powered by meta-music techniques. Generate professional beat designs, MIDI, and WAV audio from text prompts and melody templates.",
+  "keywords": [
+    "pi-package",
+    "music",
+    "beat-maker",
+    "midi",
+    "audio",
+    "meta-music",
+    "suno"
+  ],
+  "license": "MIT",
+  "bin": {
+    "nbeat": "./bin/nbeat.js"
+  },
+  "pi": {
+    "extensions": [
+      "./src/index.ts"
+    ],
+    "skills": [
+      "./skills/nbeat"
+    ],
+    "prompts": [
+      "./prompts"
+    ]
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "skills/nbeat/beatmakestep.md",
+    "skills/nbeat/SKILL.md",
+    "skills/nbeat/templates/",
+    "skills/nbeat/meta-music-skill/A_元技巧与算子目录.md",
+    "skills/nbeat/meta-music-skill/B_参数值空间.md",
+    "skills/nbeat/meta-music-skill/C_复合元技巧与复合算子目录.md",
+    "skills/nbeat/meta-music-skill/D_复合算子参数值空间.md",
+    "prompts/",
+    "scripts/generate_beat.py",
+    "ui/bridge.js",
+    "ui/demo3/",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourname/nbeat-agent"
+  },
+  "dependencies": {
+    "@earendil-works/pi-coding-agent": "*",
+    "ws": "^8.21.0"
+  },
+  "peerDependencies": {
+    "typebox": "*"
+  }
+}

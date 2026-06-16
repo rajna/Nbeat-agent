@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NBEAT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Subtle background -->
+  <div class="bg-glow" aria-hidden="true">
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+  </div>
+
+  <div class="app">
+    <!-- ========== LEFT SIDEBAR ========== -->
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="brand-row">
+          <a href="#" class="brand">
+            <!-- <span class="brand-mark">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                <circle cx="12" cy="12" r="3" fill="currentColor"/>
+              </svg>
+            </span> -->
+            <span class="brand-name">NBEAT</span>
+          </a>
+          <button class="icon-btn-sm" aria-label="Collapse sidebar">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="profile">
+          <div class="profile-avatar">
+            <span>Kl</span>
+          </div>
+          <div class="profile-info">
+            <div class="profile-name">Kael</div>
+            <div class="profile-credits">
+              <svg viewBox="0 0 24 24" width="11" height="11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 18V5l12-2v13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="6" cy="18" r="3" stroke="currentColor" stroke-width="2"/>
+                <circle cx="18" cy="16" r="3" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              50 Credits
+            </div>
+          </div>
+          <button class="chev-btn" aria-label="Profile menu">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- <button class="upgrade-btn">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+          Upgrade to Pro
+        </button> -->
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1V9.5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+          <span>Home</span>
+        </a>
+        <!-- <a href="#" class="nav-item">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+            <path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>Explore</span>
+        </a> -->
+        <a href="#" class="nav-item active">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2v20M2 12h20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>Create</span>
+        </a>
+        <!-- <a href="#" class="nav-item">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+            <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+            <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+            <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <span>Studio</span>
+        </a> -->
+        <!-- <a href="#" class="nav-item">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>Library</span>
+        </a> -->
+        <!-- <a href="#" class="nav-item">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M10 21a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>Notifications</span>
+          <span class="nav-badge">3</span>
+        </a> -->
+      </nav>
+
+      <div class="sidebar-bottom">
+        <!-- <a href="#" class="nav-item">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 3v2H5v14h14V11h2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4z" stroke="currentColor" stroke-width="2"/>
+            <path d="M14 3h7v7M21 3l-9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Labs</span>
+        </a> -->
+        <!-- <a href="#" class="nav-item">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+            <path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>Terms &amp; Policies</span>
+        </a> -->
+        <a href="#" class="nav-item">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
+          </svg>
+          <span>More</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- ========== MIDDLE: CREATOR PANEL ========== -->
+    <section class="creator-panel">
+      <div class="creator-top">
+        <div class="credits-pill">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18V5l12-2v13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="6" cy="18" r="3" stroke="currentColor" stroke-width="2"/>
+            <circle cx="18" cy="16" r="3" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <span>50</span>
+        </div>
+
+        <div class="mode-toggle">
+          <button class="mode-opt active">Simple</button>
+          <button class="mode-opt">Advanced</button>
+        </div>
+
+        <div class="model-select" id="nbeatStatus">
+          <span>🎧 nbeat</span>
+        </div>
+      </div>
+
+      <div class="source-row">
+        <button class="source-btn" id="templateBtn" title="Select melody template">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Template</span>
+        </button>
+        <button class="source-btn" id="uploadJsonBtn" title="Upload melody JSON">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Upload</span>
+        </button>
+        <input type="file" id="jsonFileInput" accept=".json" style="display:none" />
+      </div>
+
+      <!-- Lyrics section (hidden) -->
+      <div class="panel-section" style="display:none">
+        <div class="section-header">
+          <button class="section-toggle">
+            <svg class="caret" viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Lyrics</span>
+          </button>
+          <div class="lyrics-tabs">
+            <button class="lyrics-tab active">Write</button>
+            <button class="lyrics-tab">Prompt</button>
+            <button class="lyrics-tab">Instrumental</button>
+          </div>
+        </div>
+
+        <div class="lyrics-body">
+          <textarea
+            class="lyrics-input"
+            rows="6"
+            placeholder="[Verse]&#10;This is where you write your rhymes&#10;or give our Magic Wand a try ↙&#10;Section [tags] can help instruct your&#10;songs to feel more tight and structured"
+          ></textarea>
+          <div class="lyrics-footer">
+            <div class="lyrics-tools">
+              <button class="tool-btn" aria-label="Show tags">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 6h16M7 12h13M10 18h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </button>
+              <button class="tool-btn magic" aria-label="Magic Wand">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 19L19 5M14 3l1.5 1.5M19 8l1.5 1.5M3 14l1.5 1.5M11 21l1.5 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M16 4l1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2z" fill="currentColor"/>
+                </svg>
+              </button>
+            </div>
+            <button class="tool-btn" aria-label="Expand">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 4h6v2H6v4H4V4zm10 0h6v6h-2V6h-4V4zM4 14h2v4h4v2H4v-6zm14 0h2v6h-6v-2h4v-4z" fill="currentColor"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Styles section -->
+      <div class="panel-section">
+        <div class="section-header">
+          <button class="section-toggle">
+            <svg class="caret" viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Styles</span>
+          </button>
+        </div>
+
+        <div class="styles-body">
+          <textarea
+            class="styles-input"
+            rows="3"
+            placeholder="dark pop, G harmonic minor, 135 BPM, deep 808 bass"
+          >dark pop, G harmonic minor, 135 BPM, deep 808 bass</textarea>
+          <div class="styles-footer">
+            <div class="tag-chips" id="templateChips">
+              <span class="mini-tag" id="templateTag" style="display:none"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Template selector modal -->
+      <div id="templateModal" class="nbeat-modal" style="display:none">
+        <div class="nbeat-modal-content">
+          <div class="nbeat-modal-header">
+            <h3>📁 Select Template</h3>
+            <button id="closeTemplateModal" class="nbeat-modal-close">✕</button>
+          </div>
+          <div id="templateList" class="template-list"></div>
+        </div>
+      </div>
+
+      <div class="creator-spacer"></div>
+
+      <div class="create-action-wrap">
+        <button class="create-btn-large" id="createBeatBtn">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18V5l12-2v13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="6" cy="18" r="3" stroke="currentColor" stroke-width="2"/>
+            <circle cx="18" cy="16" r="3" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          Create
+        </button>
+      </div>
+
+      <!-- Progress panel -->
+      <div id="progressPanel" class="nbeat-progress" style="display:none">
+        <div class="nbeat-progress-stage" id="progressStage">🎧 Ready</div>
+        <div class="nbeat-progress-log" id="progressLog"></div>
+      </div>
+
+      <!-- Prompt output (hidden by default) -->
+      <div id="promptOutput" class="nbeat-prompt-output" style="display:none">
+        <div class="nbeat-prompt-header">
+          <span>📋 Generated Prompt</span>
+          <button class="tool-btn" id="copyPromptBtn" title="Copy to clipboard">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 16H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2M16 12h2a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+        <pre id="promptText" class="nbeat-prompt-text"></pre>
+        <div class="nbeat-prompt-hint" id="promptHint"></div>
+      </div>
+    </section>
+
+    <!-- ========== RIGHT: WORKSPACE ========== -->
+    <section class="workspace">
+      <header class="workspace-header">
+        <div class="breadcrumb">
+          <span class="crumb-item">Workspaces</span>
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="crumb-item active">My Workspace</span>
+        </div>
+      </header>
+
+      <div class="workspace-toolbar">
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+            <path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <input type="text" class="search-input" placeholder="Search" />
+        </div>
+
+        <button class="toolbar-pill">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 5h18l-7 9v6l-4-2v-4L3 5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+          <span>Filters (3)</span>
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <button class="toolbar-pill">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>Newest</span>
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <div class="pager">
+          <button class="pager-btn" aria-label="Previous">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <span class="pager-num">1</span>
+          <button class="pager-btn" aria-label="Next">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="song-list" id="songList">
+        <!-- Songs rendered by JS -->
+      </div>
+    </section>
+
+    <!-- ========== BOTTOM PLAYER ========== -->
+    <footer class="player-bar">
+      <div class="player-controls">
+        <button class="ctrl" aria-label="Shuffle">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 3h5v5M4 20l17-17M21 16v5h-5M15 15l6 6M4 4l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button class="ctrl" aria-label="Previous">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 5h2v14H6zM20 5L9 12l11 7V5z"/>
+          </svg>
+        </button>
+        <button class="ctrl ctrl-play" id="playerPlayBtn" aria-label="Play">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+        </button>
+        <button class="ctrl" aria-label="Next">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 5h2v14h-2zM4 5l11 7-11 7V5z"/>
+          </svg>
+        </button>
+        <button class="ctrl" aria-label="Repeat">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="player-progress">
+        <span class="prog-time" id="curTime">0:42</span>
+        <div class="prog-track" id="progTrack">
+          <div class="prog-fill" id="progFill"></div>
+          <div class="prog-thumb" id="progThumb"></div>
+        </div>
+        <span class="prog-time" id="totalTime">3:55</span>
+      </div>
+
+      <div class="player-right">
+        <button class="ctrl" aria-label="Volume">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11 5L6 9H2v6h4l5 4V5zM15 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
