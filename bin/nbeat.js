@@ -166,9 +166,9 @@ function showSetupGuide() {
 
     } else if (choice === "3") {
       console.log(`
-  Run: nbeat
-  Then type: /login
-  Select your subscription provider.
+  1. Run: nbeat
+  2. Inside pi, type: /login
+  3. Select your subscription (Claude Pro, ChatGPT, Copilot...)
   `);
       rl.close();
 
@@ -338,8 +338,17 @@ if (!piBin) {
 
 // ── Check API key before launching pi ────────────────
 if (!hasApiKey()) {
-  showSetupGuide();
-  process.exit(1);
+  console.log(`
+╔══════════════════════════════════════════════════════════╗
+║  ⚠️  未检测到 API Key                                    ║
+║                                                          ║
+║  nbeat setup   → 交互式配置                               ║
+║  /login        → 订阅登录 (启动后输入)                     ║
+║                                                          ║
+║  继续启动 nbeat (可进入后 /login)...                       ║
+╚══════════════════════════════════════════════════════════╝
+`);
+  // Don't exit — let user do /login inside pi
 }
 
 // ── Check extension exists ─────────────────────────────
