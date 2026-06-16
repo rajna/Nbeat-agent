@@ -265,6 +265,16 @@ function findPiBinary() {
     }
   }
 
+  // 4. Windows: common npm global locations
+  if (isWin) {
+    const winPaths = [
+      path.join(process.env.APPDATA || "", "npm", piCmd),
+    ];
+    for (const p of winPaths) {
+      try { fs.accessSync(p, fs.constants.X_OK); return p; } catch {}
+    }
+  }
+
   return null;
 }
 
@@ -303,6 +313,7 @@ function spawnPiAndStream(jobId, prompt, ws) {
       NBEAT_WORK_DIR: job.workDir,
     },
     stdio: ["ignore", "pipe", "pipe"],
+    shell: process.platform === "win32",  // Windows .cmd requires shell
   });
 
   let buffer = "";
