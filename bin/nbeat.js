@@ -100,14 +100,80 @@ function hasApiKey() {
 }
 
 function showSetupGuide() {
+  const readline = require("readline");
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
   console.log(`
 ╔══════════════════════════════════════════════════════════╗
 ║  🔑  NBeat Setup — 配置 LLM API Key                      ║
 ╚══════════════════════════════════════════════════════════╝
 
-   NBeat uses pi coding agent under the hood.
-   You need an LLM API key to generate beats.
+  NBeat uses pi coding agent under the hood.
+  Supported: Anthropic, OpenAI, Gemini, DeepSeek, etc.
 
+  1. Environment variable (temporary, per-session)
+  2. Save to ~/.pi/agent/auth.json (persistent)
+  3. Subscription login (Claude Pro / ChatGPT / Copilot)
+  4. Show instructions & exit
+`);
+
+  rl.question("\n  Choose [1-4]: ", (answer) => {
+    const choice = answer.trim();
+
+    if (choice === "1") {
+      rl.question("  Provider [anthropic]: ", (provider) => {
+        provider = provider.trim() || "anthropic";
+        rl.question("  API Key: ", (key) => {
+          key = key.trim();
+          if (!key) {
+            console.log("  ❌ No key entered.\n");
+            rl.close();
+            return;
+          }
+          const varMap = { anthropic: "ANTHROPIC_API_KEY", openai: "OPENAI_API_KEY", gemini: "GEMINI_API_KEY", deepseek: "DEEPSEEK_API_KEY" };
+          const envVar = varMap[provider.toLowerCase()] || `${provider.toUpperCase()}_API_KEY`;
+          console.log(`\n  ✅ Run this command (or add to ~/.zshrc / ~/.bashrc):`);
+          console.log(`  export ${envVar}=${key}\n`);
+          console.log(`  Then: nbeat\n`);
+          rl.close();
+        });
+      });
+
+    } else if (choice === "2") {
+      rl.question("  Provider [anthropic]: ", (provider) => {
+        provider = provider.trim() || "anthropic";
+        rl.question("  API Key: ", (key) => {
+          key = key.trim();
+          if (!key) {
+            console.log("  ❌ No key entered.\n");
+            rl.close();
+            return;
+          }
+          const authDir = path.join(process.env.HOME || "/tmp", ".pi", "agent");
+          fs.mkdirSync(authDir, { recursive: true });
+          const authFile = path.join(authDir, "auth.json");
+          const auth = { active_provider: provider, api_key: key };
+          fs.writeFileSync(authFile, JSON.stringify(auth, null, 2), "utf-8");
+          fs.chmodSync(authFile, 0o600);
+          console.log(`\n  ✅ Saved to ${authFile}`);
+          console.log(`  Run: nbeat\n`);
+          rl.close();
+        });
+      });
+
+    } else if (choice === "3") {
+      console.log(`
+  Run: nbeat
+  Then type: /login
+  Select your subscription provider.
+  `);
+      rl.close();
+
+    } else {
+      console.log(`
   ┌─────────────────────────────────────────────────┐
   │  Option 1: API Key (recommended, pay-as-you-go) │
   └─────────────────────────────────────────────────┘
@@ -115,25 +181,23 @@ function showSetupGuide() {
     export ANTHROPIC_API_KEY=sk-ant-...
     nbeat
 
-    Also supported: OPENAI_API_KEY, GEMINI_API_KEY,
-    DEEPSEEK_API_KEY, OPENROUTER_API_KEY, GROQ_API_KEY
-
   ┌──────────────────────────────────────────┐
-  │  Option 2: Subscription Login            │
+  │  Option 2: Save to auth.json (persistent)│
   └──────────────────────────────────────────┘
 
-    nbeat
-    /login       ← type this inside pi
-    Then select: Claude Pro / ChatGPT / Copilot
+    nbeat setup → choose 2
 
   ┌──────────────────────────────────────────┐
-  │  Option 3: Save to ~/.pi/agent/auth.json │
+  │  Option 3: Subscription Login            │
   └──────────────────────────────────────────┘
 
-    echo '{"active_provider":"anthropic","api_key":"sk-ant-..."}' > ~/.pi/agent/auth.json
+    nbeat → /login → Claude Pro / ChatGPT
 
   After setup, run:  nbeat ui   or   nbeat
 `);
+      rl.close();
+    }
+  });
 }
 
 // ── Show nbeat-specific help ───────────────────────────
