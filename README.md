@@ -31,51 +31,42 @@ NBeat Agent turns pi into a professional beat maker. Describe a style, pick a te
 ```
 
 
-
- ## Quick Install                                                                                    
+## Quick Install                                                                                    
                                                                                                        
    ### With pi                                                                                         
    ```bash                                                                                             
-   pi install git:github.com/你的用户名/nbeat-agent                                                    
+   pi install git:github.com/rajna/nbeat-agent                                                         
  ```                                                                                                   
                                                                                                        
  ### Without pi                                                                                        
                                                                                                        
  ```bash                                                                                               
-   git clone https://github.com/你的用户名/nbeat-agent                                                 
-   cd nbeat-agent && npm install && npm link                                                           
-   nbeat ui                                                                                            
+   git clone https://github.com/rajna/Nbeat-agent.git                                                      
+   cd Nbeat-agent && npm install && npm link                                                           
+   nbeat setup          # configure API key                                                            
+   nbeat ui             # launch Web UI                                                                
+ ```                                                                                                   
+                                                                                                       
+ API Key Setup (3 options)                                                                             
+                                                                                                       
+ ```bash                                                                                               
+   # Option 1: Environment variable                                                                    
+   export ANTHROPIC_API_KEY=sk-ant-...                                                                 
+                                                                                                       
+   # Option 2: Subscription login                                                                      
+   nbeat → /login → Claude Pro / ChatGPT / Copilot                                                     
+                                                                                                       
+   # Option 3: Config file                                                                             
+   echo '{"active_provider":"anthropic","api_key":"sk-ant-..."}' > ~/.pi/agent/auth.json               
  ```                                                                                                   
                                                                                                        
  Requirements                                                                                          
                                                                                                        
- - Node.js 18+                                                                                         
- - Python 3.8+                                                                                         
- - LLM API key (Anthropic recommended)                                                                 
- ```                                    
-
-### Launch Web UI
-
-```bash
-nbeat ui                    # One command: start server + open browser
-# Or manually:
-node ui/bridge.js
-```
-
-## Custom Tools
-
-| Tool | Description |
-|------|-------------|
-| `nbeat_generate` | Main beat generation — loads workflow + knowledge base |
-| `nbeat_read_kb` | Read specific sections of the knowledge base (A/B/C/D/rule) |
-| `nbeat_list_templates` | List available melody template JSON files |
-
-## Commands
-
-| Command | Description |
-|---------|-------------|
-| `/nbeat:start <style>` | Quick start beat generation |
-| `/nbeat:ui` | Show Web UI file location |
+ - Node.js 18+ / Python 3.8+                                                                           
+ - LLM API key (Anthropic, OpenAI, Gemini, DeepSeek...)                                                
+ - macOS: afplay (built-in) / Linux: mpv or mpg123                                                     
+ ```                                                                                                   
+        
 
 ## Meta-Music Technique System
 
