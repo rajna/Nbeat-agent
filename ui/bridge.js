@@ -414,10 +414,21 @@ function spawnPiAndStream(jobId, prompt, ws) {
   });
 
   child.stderr.on("data", (chunk) => {
-    // stderr may contain non-JSON output, ignore
+    // Log stderr for debugging
+    const msg = chunk.toString();
+    if (msg.trim()) {
+      console.error(`[pi stderr] ${msg.trim()}`);
+      ws.send(JSON.stringify({
+        type: "progress",
+        text: `⚠️ pi: ${msg.trim().slice(0, 100)}`,
+        stage: "⚠️",
+        jobId,
+      }));
+    }
   });
 
   child.on("exit", (code) => {
+    console.log(`[pi exit] code=${code}`);
     const files = scanOutputFiles(job.workDir);
 
     // Build the prompt for copy-paste as fallback
@@ -479,7 +490,7 @@ function buildNBeatPrompt(style, template, workDir) {
 
   // Inject KB file paths so LLM knows where to find them
   const kbDir = path.join(NBEAT_DIR, "skills", "nbeat", "meta-music-skill");
-  const kbContext = `知识库文件路径:\n- 目录A_元技巧与算子目录: ${kbDir}/A_元技巧与算子目录.md\n- 目录B_参数值空间: ${kbDir}/B_参数值空间.md\n- 目录C_复合元技巧与复合算子目录: ${kbDir}/C_复合元技巧与复合算子目录.md\n- 目录D_复合算子参数值空间: ${kbDir}/D_复合算子参数值空间.md\n\n---\n\n`;
+  const kbContext = `知识库文件路径:\n- 目录A_元技巧与算子目录: ${kbDir.replace(/\\/g, "/")}/A_元技巧与算子目录.md\n- 目录B_参数值空间: ${kbDir.replace(/\\/g, "/")}/B_参数值空间.md\n- 目录C_复合元技巧与复合算子目录: ${kbDir.replace(/\\/g, "/")}/C_复合元技巧与复合算子目录.md\n- 目录D_复合算子参数值空间: ${kbDir.replace(/\\/g, "/")}/D_复合算子参数值空间.md\n\n---\n\n`;
 
   beatmakestep = executionDirective + kbContext + beatmakestep;
 
@@ -568,6 +579,7 @@ wss.on("connection", (ws) => {
 
       console.log(`[job ${currentJobId}] Style: "${style}"${template ? ` Template: ${template}` : ""}`);
       console.log(`[job ${currentJobId}] Work dir: ${job.workDir}`);
+      console.log(`[job ${currentJobId}] Prompt preview (first 200 chars): ${promptText.slice(0, 200).replace(/\n/g, ' ')}`);
 
       ws.send(JSON.stringify({
         type: "progress",
