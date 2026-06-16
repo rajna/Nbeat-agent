@@ -34,40 +34,35 @@ function findPi() {
     return bundled;
   } catch {}
 
-  // 2. Try npm root -g → nbeat-agent/node_modules/.bin (alternative global layout)
+  // 2. Try npm root -g (Windows: %APPDATA%/npm/)
   try {
     const { execSync } = require("child_process");
     const npmRoot = execSync("npm root -g", { encoding: "utf-8", timeout: 5000 }).trim();
     if (npmRoot) {
       const altBundled = path.join(npmRoot, "nbeat-agent", "node_modules", ".bin", piCmd);
-      try {
-        fs.accessSync(altBundled, fs.constants.X_OK);
-        return altBundled;
-      } catch {}
+      try { fs.accessSync(altBundled, fs.constants.X_OK); return altBundled; } catch {}
+      // Windows: pi might be installed globally at npm root
+      const globalPi = path.join(npmRoot, "..", isWin ? "pi.cmd" : "pi");
+      try { fs.accessSync(globalPi, fs.constants.X_OK); return globalPi; } catch {}
     }
   } catch {}
 
-  // 3. Try pnpm global layout
-  try {
-    const { execSync } = require("child_process");
-    const pnpmRoot = execSync("pnpm root -g 2>/dev/null", { encoding: "utf-8", timeout: 5000 }).trim();
-    if (pnpmRoot) {
-      const pnpmBundled = path.join(pnpmRoot, "nbeat-agent", "node_modules", ".bin", piCmd);
-      try {
-        fs.accessSync(pnpmBundled, fs.constants.X_OK);
-        return pnpmBundled;
-      } catch {}
-    }
-  } catch {}
-
-  // 4. Fallback: check PATH for globally installed pi (separate install)
+  // 3. Check PATH (where/witch on Windows)
   if (process.env.PATH) {
     for (const dir of process.env.PATH.split(path.delimiter)) {
       const candidate = path.join(dir, piCmd);
-      try {
-        fs.accessSync(candidate, fs.constants.X_OK);
-        return candidate;
-      } catch {}
+      try { fs.accessSync(candidate, fs.constants.X_OK); return candidate; } catch {}
+    }
+  }
+
+  // 4. Windows: check common npm global locations
+  if (isWin) {
+    const winPaths = [
+      path.join(process.env.APPDATA || "", "npm", piCmd),
+      path.join(process.env.LOCALAPPDATA || "", "npm", piCmd),
+    ];
+    for (const p of winPaths) {
+      try { fs.accessSync(p, fs.constants.X_OK); return p; } catch {}
     }
   }
 
@@ -157,7 +152,7 @@ function showSetupGuide() {
           const authFile = path.join(authDir, "auth.json");
           const auth = { active_provider: provider, api_key: key };
           fs.writeFileSync(authFile, JSON.stringify(auth, null, 2), "utf-8");
-          fs.chmodSync(authFile, 0o600);
+          try { fs.chmodSync(authFile, 0o600); } catch {} // Windows ignores
           console.log(`\n  ✅ Saved to ${authFile}`);
           console.log(`  Run: nbeat\n`);
           rl.close();
@@ -324,6 +319,7 @@ if (subcommand === "ui" || subcommand === "serve" || subcommand === "--ui" || su
 }
 
 const piBin = findPi();
+const isWin = process.platform === "win32";
 
 if (!piBin) {
   console.error(`
@@ -357,13 +353,40 @@ if (!fs.existsSync(NBEAT_EXT)) {
   process.exit(1);
 }
 
+// ── Validate pi binary ─────────────────────────────────
+if (!fs.existsSync(piBin)) {
+  console.error(`❌ pi binary not found: ${piBin}`);
+  console.error(`   Run: npm install`);
+  process.exit(1);
+}
+
+// Windows .cmd files may fail X_OK check
+if (!isWin) {
+  try {
+    fs.accessSync(piBin, fs.constants.X_OK);
+  } catch {
+    console.error(`❌ pi binary not executable: ${piBin}`);
+    process.exit(1);
+  }
+}
+
 // ── Launch pi with nbeat-agent extension ───────────────
 const args = ["-e", NBEAT_EXT, ...process.argv.slice(2)];
 
 const child = spawn(piBin, args, {
   stdio: "inherit",
-  shell: false,
+  shell: isWin,  // Windows .cmd requires shell
   env: { ...process.env },
+});
+
+child.on("error", (err) => {
+  console.error(`\n❌ Failed to launch pi: ${err.message}`);
+  console.error(`   Path: ${piBin}`);
+  if (err.code === "ENOENT") {
+    console.error(`   pi not installed. Run: npm install`);
+    console.error(`   Or: npm install -g @earendil-works/pi-coding-agent`);
+  }
+  process.exit(1);
 });
 
 child.on("exit", (code) => {
