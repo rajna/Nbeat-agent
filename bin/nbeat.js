@@ -5,15 +5,13 @@
  * Launches pi coding agent with nbeat-agent extension pre-loaded,
  * or starts the Web UI server.
  *
- * Installation installs both nbeat-agent and @earendil-works/pi-coding-agent.
- *
  * Usage:
  *   nbeat                                    # Interactive beat making (CLI)
  *   nbeat -p "make a dark pop beat, G minor" # One-shot
  *   nbeat -c                                 # Continue last session
  *   nbeat ui                                 # Start Web UI + open browser
- *   nbeat serve                              # Same as ui
- *   nbeat --help                             # Show pi help
+ *   nbeat setup                              # Configure LLM API key
+ *   nbeat help                               # Show help
  */
 
 const fs = require("fs");
@@ -76,6 +74,68 @@ function findPi() {
   return null;
 }
 
+// ── Check LLM API key ──────────────────────────────────
+
+function hasApiKey() {
+  const keyVars = [
+    "ANTHROPIC_API_KEY", "ANTHROPIC_OAUTH_TOKEN",
+    "OPENAI_API_KEY", "GEMINI_API_KEY", "DEEPSEEK_API_KEY",
+    "OPENROUTER_API_KEY", "GROQ_API_KEY",
+  ];
+  for (const v of keyVars) {
+    if (process.env[v]) return true;
+  }
+  // Check auth.json for subscription login
+  const authFile = path.join(
+    process.env.HOME || "/tmp",
+    ".pi", "agent", "auth.json"
+  );
+  if (fs.existsSync(authFile)) {
+    try {
+      const auth = JSON.parse(fs.readFileSync(authFile, "utf-8"));
+      if (auth.active_provider || Object.keys(auth).length > 0) return true;
+    } catch {}
+  }
+  return false;
+}
+
+function showSetupGuide() {
+  console.log(`
+╔══════════════════════════════════════════════════════════╗
+║  🔑  NBeat Setup — 配置 LLM API Key                      ║
+╚══════════════════════════════════════════════════════════╝
+
+   NBeat uses pi coding agent under the hood.
+   You need an LLM API key to generate beats.
+
+  ┌─────────────────────────────────────────────────┐
+  │  Option 1: API Key (recommended, pay-as-you-go) │
+  └─────────────────────────────────────────────────┘
+
+    export ANTHROPIC_API_KEY=sk-ant-...
+    nbeat
+
+    Also supported: OPENAI_API_KEY, GEMINI_API_KEY,
+    DEEPSEEK_API_KEY, OPENROUTER_API_KEY, GROQ_API_KEY
+
+  ┌──────────────────────────────────────────┐
+  │  Option 2: Subscription Login            │
+  └──────────────────────────────────────────┘
+
+    nbeat
+    /login       ← type this inside pi
+    Then select: Claude Pro / ChatGPT / Copilot
+
+  ┌──────────────────────────────────────────┐
+  │  Option 3: Save to ~/.pi/agent/auth.json │
+  └──────────────────────────────────────────┘
+
+    echo '{"active_provider":"anthropic","api_key":"sk-ant-..."}' > ~/.pi/agent/auth.json
+
+  After setup, run:  nbeat ui   or   nbeat
+`);
+}
+
 // ── Show nbeat-specific help ───────────────────────────
 
 function showHelp() {
@@ -90,6 +150,7 @@ Usage:
    nbeat <pi-options>           Forward options to pi
    nbeat ui                     Launch Web UI + open browser
    nbeat ui --port 3000         Web UI on custom port
+   nbeat setup                  Configure LLM API key
    nbeat help                   Show this help
 
 Modes:
@@ -183,6 +244,11 @@ function launchUI(extraArgs) {
 // Handle subcommands first
 const subcommand = process.argv[2];
 
+if (subcommand === "setup") {
+  showSetupGuide();
+  return;
+}
+
 if (subcommand === "help" || subcommand === "--help" || subcommand === "-h") {
   showHelp();
   return;
@@ -200,17 +266,15 @@ if (!piBin) {
 ╔══════════════════════════════════════════════════════════╗
 ║  ❌  pi coding agent not found                            ║
 ║                                                          ║
-║  nbeat-agent bundles pi as a dependency, but the binary   ║
-║  could not be located.                                    ║
-║                                                          ║
-║  Quick fix:                                              ║
-║    npm install -g @earendil-works/pi-coding-agent         ║
-║                                                          ║
-║  Or reinstall nbeat-agent:                               ║
-║    npm uninstall -g nbeat-agent                           ║
-║    npm install -g nbeat-agent                             ║
+║  Run: npm install -g @earendil-works/pi-coding-agent      ║
 ╚══════════════════════════════════════════════════════════╝
 `);
+  process.exit(1);
+}
+
+// ── Check API key before launching pi ────────────────
+if (!hasApiKey()) {
+  showSetupGuide();
   process.exit(1);
 }
 
