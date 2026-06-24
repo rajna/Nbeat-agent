@@ -765,6 +765,11 @@ textarea {
   color: var(--text);
 }
 
+.pager-btn:disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
 .pager-num {
   font-size: 13px;
   font-weight: 600;
@@ -1039,19 +1044,32 @@ textarea {
 
 .prog-track {
   flex: 1;
-  height: 4px;
-  background: var(--surface-active);
-  border-radius: 999px;
+  height: 20px;
   position: relative;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+.prog-track::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--surface-active);
+  border-radius: 999px;
+  pointer-events: none;
 }
 
 .prog-fill {
   position: absolute;
   left: 0;
-  top: 0;
-  height: 100%;
-  width: 18%;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 4px;
+  width: 0%;
   background: var(--text);
   border-radius: 999px;
   transition: width 0.1s linear;
@@ -1060,10 +1078,9 @@ textarea {
 .prog-thumb {
   position: absolute;
   top: 50%;
-  left: 18%;
   transform: translate(-50%, -50%);
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   background: var(--text);
   border-radius: 50%;
   opacity: 0;
@@ -1269,4 +1286,134 @@ textarea {
 #templateTag {
   background: rgba(77, 141, 255, 0.15);
   color: var(--accent);
+}
+
+.nbeat-refine {
+  margin-top: 12px;
+  margin-bottom: 16px;
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+}
+.nbeat-refine-header {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.nbeat-refine-input {
+  width: 100%;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 13px;
+  padding: 10px 12px;
+  resize: vertical;
+  font-family: inherit;
+}
+.nbeat-refine-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.nbeat-refine-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+#refineBtn {
+  flex: 1;
+  font-size: 14px;
+  padding: 10px 20px;
+}
+
+.refine-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.refine-btn-secondary:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.song-row.selected {
+  border-color: var(--accent);
+  background: rgba(77, 141, 255, 0.06);
+}
+
+.song-thumb {
+  position: relative;
+}
+.song-thumb .play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.35);
+  opacity: 0;
+  transition: opacity 0.2s;
+  border-radius: var(--radius-sm);
+  pointer-events: none;
+}
+.song-thumb:hover .play-overlay,
+.song-thumb.playing .play-overlay {
+  opacity: 1;
+}
+.song-thumb .play-overlay svg {
+  width: 28px;
+  height: 28px;
+  fill: white;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.5));
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.copy-suno-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  height: 28px;
+  min-width: 28px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1px solid transparent;
+}
+.copy-suno-btn:hover {
+  color: var(--accent);
+  background: rgba(77,141,255,0.08);
+  border-color: rgba(77,141,255,0.2);
+}
+
+.prog-song-name {
+  font-size: 11px;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+  flex-shrink: 0;
 }

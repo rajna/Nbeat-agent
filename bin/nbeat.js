@@ -207,7 +207,7 @@ function showHelp() {
 Usage:
    nbeat                        Interactive beat making (CLI)
    nbeat <pi-options>           Forward options to pi
-   nbeat ui                     Launch Web UI + open browser
+   nbeat ui                     Launch Web UI (auto-background)
    nbeat ui --port 3000         Web UI on custom port
    nbeat setup                  Configure LLM API key
    nbeat help                   Show this help
@@ -251,51 +251,35 @@ function launchUI(extraArgs) {
   }
   process.env.NBEAT_UI_PORT = String(uiPort);
 
-  console.log(`
-╔══════════════════════════════════════════════════════════╗
-║  🎧  NBeat Studio — Web UI                               ║
-║                                                          ║
-║  Starting server on http://localhost:${uiPort}                   ║
-║  Press Ctrl+C to stop                                     ║
-╚══════════════════════════════════════════════════════════╝
-`);
-
-  // Spawn the bridge server
+  // Spawn bridge as detached background process
   const bridge = spawn(
-    process.execPath,  // node
+    process.execPath,
     [bridgePath, "--ui-port", String(uiPort)],
     {
-      stdio: "inherit",
-      shell: false,
+      detached: true,
+      stdio: "ignore",
       env: { ...process.env, NBEAT_UI_PORT: String(uiPort) },
     }
   );
+  bridge.unref();
 
-  // Open browser after a short delay
+  console.log(`🎧 NBeat UI started at http://localhost:${uiPort}`);
+
+  // Open browser
   setTimeout(() => {
     const url = `http://localhost:${uiPort}`;
     const platform = process.platform;
-    let openCmd;
     if (platform === "darwin") {
-      openCmd = spawn("open", [url]);
+      spawn("open", [url]);
     } else if (platform === "win32") {
-      openCmd = spawn("start", ["", url], { shell: true });
+      spawn("start", ["", url], { shell: true });
     } else {
-      openCmd = spawn("xdg-open", [url]);
+      spawn("xdg-open", [url]);
     }
-    openCmd.on("error", () => {
-      // Browser open failed — user can open manually
-      console.log(`  🌐 Open in browser: ${url}`);
-    });
-  }, 1500);
+  }, 1000);
 
-  bridge.on("exit", (code) => {
-    process.exit(code ?? 0);
-  });
-
-  process.on("SIGINT",  () => bridge.kill("SIGINT"));
-  process.on("SIGTERM", () => bridge.kill("SIGTERM"));
-  process.on("SIGHUP",  () => bridge.kill("SIGHUP"));
+  // Exit nbeat CLI — bridge keeps running
+  setTimeout(() => process.exit(0), 1500);
 }
 
 // ── Main ───────────────────────────────────────────────

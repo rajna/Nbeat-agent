@@ -665,3 +665,490 @@
 
 
 共 244 个参数键
+
+
+---
+*part13归并来源: 235条技巧，参数值已按OP合并至正式表*
+
+---
+
+## part14 增量：现代制作维度参数空间
+
+### `OP_drum_rekit`
+
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `style` | 8 | `UK_garage_2_step`, `Jersey_club`, `Afrobeats_log_drum`, `80s_Linndrum`, `trap_sparse`, `boom_bap`, `country_acoustic`, `new_wave` |
+| `kick_placement` | 4 | `downbeat_4_4`, `offbeat_double_hit`, `weak_beat`, `none` |
+| `hi_hat` | 3 | `16th_continuous`, `32nd_rapid`, `8th_minimal` |
+| `snare` | 4 | `side_flash`, `beats_2_4`, `clap`, `none` |
+
+### `OP_style_graft`
+
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `source` | 10 | `70s_funk`, `70s_disco`, `90s_house`, `country_rock`, `trap_production`, `new_jack_swing`, `synth_pop`, `UK_drill`, `eurodance`, `hip_hop_2000s` |
+| `target` | 8 | `digital_quantized`, `contemporary_RnB`, `trap_808`, `acoustic_country`, `house_4_4`, `modern_pop` |
+| `relation` | 3 | `fusion`, `suture`, `modernization` |
+
+### `OP_depth_layer`
+
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `foreground` | 4 | `dry_vocal_C0`, `close_foley`, `intimate_whisper`, `near_field_1cm` |
+| `background` | 4 | `hall_reverb_4s_far`, `wide_synth_pad`, `stadium_drums`, `string_section_10m` |
+| `contrast` | 3 | `extreme_near_vs_far`, `shallow_vs_deep`, `intimate_vs_arena` |
+
+### `OP_close_dry_recording`
+
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `target` | 3 | `[vocal]`, `[vocal,guitar]`, `[vocal,foley]` |
+| `pre_delay` | 3 | `0ms`, `0ms_extreme`, `±10ms` |
+| `reverb` | 4 | `0ms_dry`, `<0.3s`, `<0.5s`, `<1s` |
+
+### `OP_reverb_field`
+
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `duration` | 6 | `0.5s`, `1s`, `1.2s`, `1.5s`, `2.5s`, `3.5s_plate` |
+| `type` | 4 | `hall`, `plate`, `convolution`, `room` |
+| `character` | 5 | `dry_close`, `bedroom`, `far_field`, `blooming`, `neon_tight` |
+
+### `OP_sidechain_pump`
+
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `source` | 2 | `kick_4_4`, `kick_offbeat` |
+| `target` | 3 | `[pad,bass]`, `[synth_lead,mid_high]`, `[pad]` |
+| `rhythm` | 2 | `per_beat_duck`, `per_2beat` |
+
+### `OP_timbre_collision`
+
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `source_a` | 4 | `degraded_vintage`, `vintage_sample`, `raw_original`, `60s_soul` |
+| `source_b` | 4 | `hyper_modern_autotune`, `digital_quantized`, `clean_modern`, `trap_808` |
+| `contrast` | 3 | `heaven_earth`, `past_present`, `analog_digital` |
+
+### `OP_collab_counterpoint`
+
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `voices` | 5 | `[male_female]`, `[rapper_singer]`, `[modern_vintage]`, `[high_low]`, `[raspy_clear]` |
+| `relation` | 3 | `counterpoint`, `cross_era_dialogue`, `frequency_gender_collision` |
+| `section` | 2 | `chorus_overlap`, `verse_alternation` |
+
+### `OP_imagery_bind`
+
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `image` | 5 | `monster_climbing`, `past_embracing_present`, `faith_collapse`, `vampire_bleeding`, `unstoppable_momentum` |
+| `semantic` | 5 | `anxiety_spiral`, `cross_temporal_embrace`, `liberation`, `extreme_devotion`, `empowerment` |
+
+### `OP_cultural_collage`
+
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `sources` | 5 | `[shamisen,Noh_theater]`, `[pipe_organ]`, `[wedding_brass]`, `[Aqua_Barbie_Girl]`, `[Fergie_Glamorous]` |
+| `target` | 3 | `[808_drums,trap]`, `[modern_pop]`, `[UK_drill]` |
+| `relation` | 3 | `fusion`, `deconstruction`, `kidnapping` |
+
+### `OP_tempo`
+
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `bpm` | 20 | `70`, `80`, `90`, `93`, `95`, `97`, `104`, `106`, `109`, `114`, `118`, `120`, `124`, `128`, `130-135`, `140-150`, `170-174` |
+
+### `OP_instant_drop`
+
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `timing` | 4 | `bridge_tail`, `pre_chorus_end`, `1_beat_silence`, `outro_climax` |
+| `method` | 3 | `cut_all_mid_low`, `full_cut_silence`, `high_freq_residue_only` |
+
+### `OP_form_reset`
+
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `section` | 3 | `bridge`, `pre_chorus`, `outro` |
+| `new_style` | 4 | `jazz_piano`, `distortion_guitar`, `string_quartet`, `a_capella` |
+
+### `OP_tempo_disguise`
+
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `sections` | 3 | `[mambo,reggaeton]`, `[verse,chorus]`, `[half_time,double_time]` |
+| `transition` | 2 | `abrupt_cut`, `gradual_accelerando` |
+
+### `OP_frequency_void`
+
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `range` | 4 | `200_800Hz`, `mid_freq_scooped`, `200_800Hz_vocal_focus`, `middle_range_empty` |
+| `effect` | 3 | `claustrophobic`, `cold_shadow`, `vocal_absolute_focus` |
+
+### `OP_frequency_breath`
+
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `verse` | 3 | `narrow_guitar_vocal`, `bass_only`, `piano_solo` |
+| `chorus` | 3 | `wide_strings_pad`, `full_ensemble_brass`, `full_spectrum` |
+| `transition` | 2 | `gradual_fill`, `staircase_build` |
+
+### `OP_sample_body_variation`
+
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `source` | 5 | `Rick_James_guitar`, `Tems_Higher`, `Eiffel_65`, `Fergie_Glamorous`, `Aqua_Barbie_Girl` |
+| `operations` | 4 | `[slice,reverse,accelerate]`, `[slow_down,pitch_down]`, `[preserve_riff,replace_drums]`, `[loop_8_bars]` |
+
+---
+*part14参数空间贡献: 56个新增OP的参数值空间已按OP分组合并至正式表*
+
+### `OP_accent_emphasis`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `level` | 5 | `pp`(30), `mp`(45), `mf`(50), `f`(30), `fff`(5) |
+| `function` | 3 | `natural_breath`(60), `melodic_accent`(50), `rhythmic_accent`(40) |
+
+### `OP_ambient_motif`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `source` | 5 | `spoken_voice`, `damaged_tape`, `wedding_video`, `radio_sample`, `field_recording` |
+| `character` | 4 | `intimacy_setter`, `cyber_ruin`, `childlike`, `nostalgic` |
+
+### `OP_analog_color`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `instrument` | 4 | `Rhodes`(20), `Hammond`(10), `Juno_60`(15), `DX7`(5) |
+| `color` | 5 | `warm`(20), `bright`(10), `dark`(8), `cold`(5), `vintage`(7) |
+
+### `OP_aug_dim_drift`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `chords` | 4 | `dim7`(20), `Aug`(5), `Aug6`(3), `Gbdim7`(5) |
+| `function` | 3 | `false_hope`(10), `tension`(15), `transition`(10) |
+
+### `OP_bass_melody`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `instrument` | 3 | `tuba`(10), `synth_bass`(15), `808`(5) |
+| `type` | 3 | `walking_bass`, `chromatic_descending`, `parallel_moving` |
+
+### `OP_blues_scale_graft`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `notes` | 2 | `b3_b7`(20), `b3_b5_b7`(10) |
+| `intensity` | 3 | `restrained`(15), `medium`(10), `extreme`(5) |
+
+### `OP_chant_longtone`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `type` | 3 | `repeated_declaration`(15), `single_phrase`(10) |
+| `articulation` | 3 | `breathy_pre_attack`(12), `clean_sustain`(8), `raspy`(5) |
+
+### `OP_closure`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `range` | 4 | `narrow_fifth`(150), `narrow_octave`(80), `one_octave`(40), `wide`(10) |
+| `return_point` | 3 | `anchor_note`(180), `tonic`(60), `dominant`(40) |
+
+### `OP_crescendo_track`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `type` | 4 | `gradual_build`(30), `parabolic`(25), `sectional_jump`(15), `staircase`(10) |
+| `dynamic_delta` | 5 | `10dB`(10), `15dB`(25), `20dB`(20), `25dB`(15), `30dB`(10) |
+
+### `OP_dialogue_orchestration`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `instruments` | 6 | `piano`(20), `strings`(15), `brass`(5), `guitar`(10), `synth`(15), `full_band`(10) |
+| `transition` | 3 | `sectional`(30), `gradual`(20), `abrupt`(10) |
+
+### `OP_dual_sample_counterpoint`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `voices` | 3 | `[rap,vocal]`(8), `[male,female]`(5), `[verse_duel]`(2) |
+| `motif_a` | 3 | `short_staccato`(8), `rap_16th`(5), `legato`(2) |
+| `motif_b` | 3 | `long_legato`(8), `vocal_sustain`(5), `staccato`(2) |
+
+### `OP_extreme_pan_split`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `type` | 4 | `L80_R80`(8), `ultra_wide`(5), `hard_LR`(2) |
+| `target` | 3 | `pad`(8), `synth`(5), `sample`(2) |
+
+### `OP_form_sectioning`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `sections` | 5 | `[verse,chorus]`(30), `[intro,verse,chorus,bridge,outro]`(25), `[single]`(10), `[verse_duel]`(5), `[dual_bridge]`(5) |
+| `structure` | 4 | `standard`(40), `no_chorus`(10), `dual_bridge`(5), `tempo_section_block`(5) |
+
+### `OP_frequency_strip`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `range` | 4 | `below_200Hz`(10), `200_800Hz`(8), `mid_scoop`(5), `above_10kHz`(2) |
+| `target` | 3 | `guitar`(10), `vocal`(8), `sample`(5) |
+
+### `OP_imagery_bind`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `image` | 6 | `monster_climbing`(10), `past_embracing_present`(8), `faith_collapse`(5), `vampire_bleeding`(5), `unstoppable_momentum`(8), `night_alley`(5) |
+| `semantic` | 6 | `anxiety`(10), `liberation`(8), `devotion`(8), `empowerment`(10), `despair`(5), `grief`(5) |
+
+### `OP_instant_drop`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `timing` | 3 | `bridge_tail`(10), `pre_chorus_end`(8), `1_beat_before`(5) |
+| `method` | 3 | `cut_mid_low`(10), `full_silence`(8), `high_residue`(5) |
+
+### `OP_jittered_vocal`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `processing` | 3 | `formant_shifting`(5), `auto_tune_fast`(5), `pitch_correction`(5) |
+| `target_resonance` | 2 | `breath_rate`(5), `character_match`(5) |
+
+### `OP_live_unquantized_groove`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `sources` | 3 | `drums`(20), `bass`(10), `all_rhythm`(10) |
+| `quantized` | 2 | `true`(25), `false`(15) |
+| `humanize` | 2 | `true`(15), `false`(25) |
+
+### `OP_lpf_cloud`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `cutoff` | 5 | `1.5kHz`(8), `3kHz`(5), `6kHz`(3), `800Hz`(3), `10kHz`(2) |
+| `target` | 3 | `sample`(10), `synth`(5), `vocal`(5) |
+
+### `OP_micro_noise_ornament`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `type` | 3 | `consonant_spray`(10), `glottal_fry`(5), `breath_noise`(5) |
+| `target` | 2 | `vocal`(15), `key_words`(5) |
+
+### `OP_micro_offset`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `offset_ms` | 6 | `-15`(5), `-10`(10), `0`(10), `+10`(15), `+20`(15), `+25`(5) |
+| `effect` | 5 | `ahead_bounce`(10), `behind_cold`(15), `hesitation`(10), `rushed_attack`(5), `relaxed`(10) |
+
+### `OP_minimal_depth`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `type` | 4 | `mono_C0`(5), `car_cabin`(5), `basement`(3), `bedroom`(2) |
+| `stereo` | 2 | `narrow`(10), `center`(5) |
+
+### `OP_modal_alternate`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `type` | 4 | `major_minor_alternating`(30), `major_blues_overlay`(15), `minor_framework`(10), `modal_dialogue`(5) |
+| `section` | 3 | `verse_chorus`(30), `bridge`(10), `through_composed`(5) |
+
+### `OP_ornament_fill`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `type` | 4 | `falsetto_tail_slide`(20), `breathy_downward`(15), `glottal_tear`(10), `consonant_attack`(5) |
+| `position` | 3 | `phrase_tail`(30), `phrase_entry`(10), `sustained_note`(10) |
+
+### `OP_pan_reverb_depth`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `vocal_depth` | 3 | `C0_dry`(8), `near_field`(5), `mid_field`(2) |
+| `pad_width` | 3 | `L80_R80`(8), `wide`(5), `moderate`(2) |
+| `pre_delay` | 3 | `0ms`(5), `50ms`(5), `80ms`(5) |
+
+### `OP_parallel_drift`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `type` | 3 | `parallel_chord`(20), `same_voicing_shift`(15), `planing`(5) |
+| `cadence` | 2 | `avoided`(30), `weak`(10) |
+
+### `OP_pitchdown_coloring`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `source` | 3 | `60s_soul`(10), `90s_RnB`(8), `classical`(2) |
+| `effect` | 4 | `eerie_mud`(10), `lo_fi_warmth`(5), `ghostly`(5), `menacing`(3) |
+
+### `OP_regional_style_graft`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `source` | 4 | `90s_house`(8), `new_jack_swing`(5), `new_wave_80s`(5), `eurodance`(2) |
+| `genre` | 3 | `dance_pop`(10), `contemporary_RnB`(5), `synth_pop`(5) |
+
+### `OP_rhythm_replace`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `source` | 2 | `heartbeat`(5), `nature`(5) |
+| `target` | 2 | `drum_programming`(5), `percussion`(5) |
+
+### `OP_section_by_timbre`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `section_a` | 3 | `pad_soft`(10), `piano`(5), `synth_dream`(5) |
+| `section_b` | 3 | `distortion_lead`(10), `full_band`(5), `square_aggressive`(5) |
+| `transition` | 2 | `bridge`(15), `pre_chorus`(5) |
+
+### `OP_slap_bass`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `type` | 2 | `disco_funk`(10), `pop`(5) |
+| `role` | 2 | `groove_driver`(10), `fill`(5) |
+
+### `OP_spectral_collapse`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `effects` | 3 | `phaser_flanger`(8), `chorus`(4), `filter_sweep`(3) |
+| `character` | 3 | `disappearing`(8), `liquid`(4), `shimmer`(3) |
+
+### `OP_spot_motif`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `type` | 3 | `spoken_command`(5), `signature_sound`(3), `rhythm_only`(2) |
+| `bar_length` | 2 | `1`(5), `2`(5) |
+
+### `OP_tape_saturation`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `type` | 3 | `cassette`(10), `reel_to_reel`(5), `tube`(5) |
+| `intensity` | 3 | `subtle`(10), `medium`(8), `extreme`(5) |
+| `wow_flutter` | 2 | `on`(8), `off`(12) |
+
+### `OP_tempo`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `bpm` | 20 | `70`(5), `80`(5), `90`(5), `93`(3), `95`(5), `97`(5), `104`(8), `106`(3), `109`(3), `114`(3), `118`(5), `120`(5), `124`(5), `128`(3), `131-135`(8), `140-150`(8), `170-174`(5) |
+
+### `OP_vocal_drum_interlock`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `relation` | 3 | `offset_counterpoint`(10), `lock`(8), `mismatch`(5) |
+| `vocal_density` | 2 | `dense`(15), `sparse`(5) |
+
+### `OP_vocal_pyramid`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `layers` | 4 | `4`(10), `7`(5), `8`(5), `2`(5) |
+| `section` | 2 | `outro`(10), `bridge`(10), `chorus`(5) |
+
+### `OP_frequency_breath`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `verse` | 3 | `narrow`(15), `single_instrument`(10), `bass_only`(5) |
+| `chorus` | 3 | `full_spectrum`(15), `wide`(10), `orchestral`(5) |
+| `transition` | 2 | `gradual_expand`(20), `staircase`(10) |
+
+### `OP_spatial_counterpoint`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `foreground` | 3 | `vocal_shush`(5), `intimate_whisper`(8), `close_sound`(5) |
+| `background` | 3 | `stadium_horn`(5), `arena_reverb`(8), `cathedral`(5) |
+| `contrast` | 3 | `extreme`(10), `taunt`(5), `spatial_joke`(3) |
+
+### `OP_context`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `source_file` | 50 | `1.json`(50), `2.json`(40), ... |
+| `json_index` | 10 | `1`(50), `2`(40), ...(递增) |
+| `notes_count` | 20 | `60-120`(大部分) |
+
+### `OP_grid_resistance`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `grid_offset` | 12 | `0:53`(高), `0.5:36`(高), `0:27`(中), `0.25:8`(低) |
+| `primary_offset` | 4 | `0`(最频), `0.5`(次频), `0.25`, `0.75` |
+| `rhythm_density` | 2 | `高`(多数), `中`(少数) |
+
+### `OP_hard_clip_wall`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `type` | 4 | `fuzz_30pct`(10), `bitcrusher_8bit`(8), `distortion_15pct`(8), `overdrive`(5) |
+| `target` | 3 | `organ`(10), `piano`(8), `sample`(5) |
+
+### `OP_harmonic_interaction`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `voices` | 2 | `male_female`(20), `solo_duo`(10) |
+| `relation` | 2 | `complementary`(20), `contrast`(10) |
+
+### `OP_harmonic_interpolation`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `reference` | 3 | `Bang_Bang`(5), `film_theme`(5), `jazz_standard`(5) |
+| `transposition` | 3 | `minor_third_down`(5), `major_second`(5), `preserve`(5) |
+
+### `OP_microtiming_swing`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `swing` | 10 | `0`(100), `10-20`(50), `50-65`(80) |
+| `humanize` | 2 | `false`(180), `true`(55) |
+| `target` | 3 | `drums`(120), `hi_hat`(60), `all_rhythm`(55) |
+
+### `OP_onomatopoeia_rhythm`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `phrase_type` | 3 | `continuous`(40), `breath_based`(30), `periodic`(10) |
+| `breath_based` | 2 | `true`(30), `false`(40) |
+
+### `OP_register_range`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `octave_distribution` | 10 | `0:73,-1:16`(30), `-1:67`(25), `0:45,-1:30,1:15`(20) |
+| `range_type` | 3 | `narrow`(150), `medium`(60), `wide`(25) |
+
+### `OP_reharmonize_sample`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `operations` | 4 | `slow_down`(20), `pitch_to_minor`(15), `tempo_reduce`(10), `recontextualize`(5) |
+| `source` | 5 | `90s_RnB`(10), `Eiffel_65`(5), `Mario_Winans`(5), `Aqua`(5), `Fergie`(5) |
+
+### `OP_rest_breath_design`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `rest_count` | 8 | `0`(80), `1-3`(40), `5+`(20) |
+| `function` | 3 | `phrasing_breath`(80), `call_response`(30), `section_boundary`(30) |
+
+### `OP_sample_stack`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `source` | 3 | `Mario_Winans`(5), `Fergie`(5), `Aqua`(5) |
+| `operations` | 2 | `preserve_riff`(10), `replace_drums`(5) |
+
+### `OP_scale_degree_weight`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `degree_profile` | 20 | `3:36,2:22,1:14`(高频), `1:33,2:18,3:16`(高频) |
+| `unused_degrees` | 5 | `7`(80), `4,5,6,7`(40), `none`(30) |
+| `primary_degrees` | 5 | `[3,2,1]`(50), `[1,2,3]`(40), `[3,1,5]`(30) |
+
+### `OP_secondary_substitution`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `type` | 5 | `extension`(80), `inversion`(60), `borrowed`(50), `applied_dominant`(30), `altered`(15) |
+| `placement` | 2 | `passing_points`(150), `cadence_point`(85) |
+| `function` | 2 | `return_to_main_cycle`(180), `color_accent`(55) |
+
+### `OP_stepwise_wrap`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `contour` | 3 | `stepwise`(40), `step_leap_mix`(15), `leap_frame`(5) |
+| `phrase_type` | 3 | `continuous`(30), `breath_based`(20), `periodic`(10) |
+
+### `OP_stereo_call_response`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `type` | 3 | `slight_LR`(15), `center_vs_wide`(8), `narrow_to_wide`(2) |
+| `target` | 2 | `vocals`(15), `instruments`(5) |
+
+### `OP_synth_pulse`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `type` | 4 | `808_sub`(20), `sine_bass`(10), `constant_drone`(10), `pitch_slide`(10) |
+| `range` | 3 | `40-60Hz`(20), `60-200Hz`(15), `full`(5) |
+
+### `OP_frequency_expansion`
+| 参数键 | 不同值数 | 高频/样本值 |
+|---|---|---|
+| `range` | 4 | `6kHz_boost`(10), `60Hz_boost`(10), `2-4kHz`(10), `full`(5) |
+| `target` | 3 | `synth`(15), `horn`(5), `vocal`(10) |

@@ -36,7 +36,7 @@
       case 'waveform':
         const bars = [];
         for (let i = 0; i < 14; i++) {
-          const h = 8 + Math.sin(i * 0.7) * 14 + Math.random() * 8;
+          const h = Math.max(2, 8 + Math.sin(i * 0.7) * 14 + Math.random() * 8);
           bars.push(`<rect x="${6 + i * 4}" y="${32 - h / 2}" width="2.5" height="${h}" rx="1" fill="rgba(255,255,255,0.8)"/>`);
         }
         art = bars.join('');
@@ -91,19 +91,51 @@
 
   const list = document.getElementById('songList');
 
-  function renderSongs(data) {
+  // ── Pagination State ──────────────────────────
+  const PAGE_SIZE = 10;
+  let currentPage = 1;
+  let currentData = []; // all (possibly filtered) songs
+
+  function updatePager() {
+    const totalPages = Math.max(1, Math.ceil(currentData.length / PAGE_SIZE));
+    if (currentPage > totalPages) currentPage = totalPages;
+    const numEl = document.querySelector('.pager-num');
+    if (numEl) numEl.textContent = currentPage;
+    const prevBtn = document.querySelector('.pager-btn:first-child');
+    const nextBtn = document.querySelector('.pager-btn:last-child');
+    if (prevBtn) prevBtn.disabled = currentPage <= 1;
+    if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+  }
+
+  function goToPage(page) {
+    const totalPages = Math.max(1, Math.ceil(currentData.length / PAGE_SIZE));
+    if (page < 1) page = 1;
+    if (page > totalPages) page = totalPages;
+    currentPage = page;
+    renderSongs(currentData, currentPage);
+    updatePager();
+  }
+
+  function renderSongs(data, page) {
     if (!list) return;
     if (data.length === 0) {
       list.innerHTML = `<div style="padding:40px;text-align:center;color:var(--text-3);font-size:13px">
         🎧 No beats yet. Create your first beat!
       </div>`;
+      updatePager();
       return;
     }
 
     const thumbTypes = ['lightning', 'waveform', 'spiral', 'grid', 'dots', 'sphere', 'stripes'];
 
-    list.innerHTML = data
+    // Paginate
+    const p = page || 1;
+    const start = (p - 1) * PAGE_SIZE;
+    const paged = data.slice(start, start + PAGE_SIZE);
+
+    list.innerHTML = paged
       .map((s, i) => {
+        const actualIdx = start + i;
         const thumb = s.thumb || thumbTypes[Math.floor(Math.random() * thumbTypes.length)];
         const grad = s.gradient || [
           '#' + Math.floor(Math.random()*0xFFFFFF).toString(16).padStart(6,'0'),
@@ -111,19 +143,22 @@
           '#' + Math.floor(Math.random()*0xFFFFFF).toString(16).padStart(6,'0'),
         ];
         const badgeClass = s.badgeType === 'preview' ? 'title-badge preview' : 'title-badge v4';
-        const right = s.wavUrl
-          ? `<button class="remix-btn play-toggle" data-idx="${i}">
+        const right = s.workDir
+          ? `<button class="remix-btn refine-trigger" data-idx="${actualIdx}">
                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                 <path d="M8 5v14l11-7z" fill="currentColor"/>
+                 <path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                </svg>
-               Play
+               Refine
              </button>`
           : `<span style="font-size:11px;color:var(--text-3)">processing...</span>`;
         return `
-          <div class="song-row" data-idx="${i}">
-            <div class="song-thumb" data-idx="${i}">
+          <div class="song-row" data-idx="${actualIdx}">
+            <div class="song-thumb" data-idx="${actualIdx}">
               ${thumbSVG(thumb, grad)}
-              <span class="thumb-time">${s.duration || '--:--'}</span>
+              <div class="play-overlay">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+              <span class="thumb-time" style="display:none">${s.duration || '--:--'}</span>
             </div>
             <div class="song-row-main">
               <div class="song-row-title">
@@ -132,6 +167,11 @@
               </div>
               <div class="song-row-desc">${s.desc || ''}</div>
               <div class="song-row-actions">
+                <span class="copy-suno-btn" data-idx="${actualIdx}" title="Copy Suno prompt">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 16H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2M16 12h2a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
                 ${s.wavUrl ? `<a href="${s.wavUrl}" download class="action-btn" title="Download WAV">
                   <svg viewBox="0 0 24 24" width="15" height="15" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -178,6 +218,57 @@
       desc.addEventListener('click', (e) => {
         e.stopPropagation();
         desc.classList.toggle('expanded');
+      });
+    });
+
+    // Bind copy-suno button
+    list.querySelectorAll('.copy-suno-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = btn.dataset.idx;
+        const song = songs[idx];
+        if (!song) return;
+        const text = song.desc?.replace(/\s*\(\d+ chars\)$/, '') || '';
+        if (text && navigator.clipboard) {
+          navigator.clipboard.writeText(text).then(() => {
+            btn.textContent = '✅';
+            setTimeout(() => btn.textContent = '📋', 1000);
+          });
+        }
+      });
+    });
+
+    // Bind Refine button → select beat + show refine panel
+    list.querySelectorAll('.refine-trigger').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = btn.dataset.idx;
+        const song = songs[idx];
+        if (!song || !song.workDir) return;
+        activeWorkDir = song.workDir;
+        list.querySelectorAll('.song-row').forEach(r => r.classList.remove('selected'));
+        btn.closest('.song-row')?.classList.add('selected');
+        const refinePanel = document.getElementById('refinePanel');
+        if (refinePanel) refinePanel.style.display = 'block';
+        showNBeatProgress(`📌 已选中: ${song.title} — 输入修改意见后点 Refine`);
+      });
+    });
+
+    // Bind row click → select for refinement
+    list.querySelectorAll('.song-row').forEach((row) => {
+      row.addEventListener('click', () => {
+        const idx = row.dataset.idx;
+        const song = songs[idx];
+        if (song && song.workDir) {
+          activeWorkDir = song.workDir;
+          // Highlight selected row
+          list.querySelectorAll('.song-row').forEach(r => r.classList.remove('selected'));
+          row.classList.add('selected');
+          // Show refine panel
+          const refinePanel = document.getElementById('refinePanel');
+          if (refinePanel) refinePanel.style.display = 'block';
+          showNBeatProgress(`📌 Selected: ${song.title}`);
+        }
       });
     });
   }
@@ -382,24 +473,19 @@
       if (!file) return;
       const reader = new FileReader();
       reader.onload = (ev) => {
-        try {
-          const content = ev.target.result;
-          JSON.parse(content); // validate
-          uploadedTemplateContent = content;
-          uploadedTemplateName = file.name;
-          selectedTemplate = null; // deselect server template
+        const content = ev.target.result;
+        uploadedTemplateContent = content;
+        uploadedTemplateName = file.name;
+        selectedTemplate = null; // deselect server template
 
-          const tag = document.getElementById('templateTag');
-          if (tag) {
-            tag.style.display = 'inline-block';
-            tag.textContent = `📤 ${file.name}`;
-            tag.style.background = 'rgba(255, 158, 60, 0.15)';
-            tag.style.color = '#ff9e3c';
-          }
-          showNBeatProgress(`📤 上传模板: ${file.name}`);
-        } catch (err) {
-          showNBeatProgress('❌ 无效的 JSON 文件');
+        const tag = document.getElementById('templateTag');
+        if (tag) {
+          tag.style.display = 'inline-block';
+          tag.textContent = `📤 ${file.name}`;
+          tag.style.background = 'rgba(255, 158, 60, 0.15)';
+          tag.style.color = '#ff9e3c';
         }
+        showNBeatProgress(`📤 上传模板: ${file.name}`);
       };
       reader.readAsText(file);
     });
@@ -450,6 +536,7 @@
         ['#0d0d2b', '#1f0d4d', '#4d1f8c'],
         ['#0a1a0a', '#1a3d1a', '#2d6b2d'],
       ];
+      const jobDir = msg.workDir || '';  // from bridge's done message
       songs.unshift({
         title: beatStyle.slice(0, 50),
         badge: '🎧 nbeat',
@@ -461,27 +548,30 @@
         wavUrl: wavFile?.httpUrl || null,
         midiUrl: midiFile?.httpUrl || null,
         sunoUrl: sunoFile?.httpUrl || null,
+        workDir: jobDir,
         files,
         cta: null,
       });
-      renderSongs(songs);
+      showSongs(songs);
 
       // Fetch Suno_Prompt.txt content for the desc
       if (sunoFile?.httpUrl) {
         fetch(sunoFile.httpUrl)
           .then(r => r.text())
           .then(text => {
-            const song = songs[0]; // most recent
+            const song = songs[0];
             if (song) {
-              song.desc = text.trim() + ` (${text.trim().length} chars)`;
-              renderSongs(songs);
+              const t = text.trim();
+              song.desc = t + ` (${t.length} chars)`;
+              song.title = t.slice(0, 20) + (t.length > 20 ? '…' : '');
+              showSongs(songs);
             }
           })
           .catch(() => {
             const song = songs[0];
             if (song) {
               song.desc = `Suno_Prompt.txt (${sunoFile.size ? formatSize(sunoFile.size) : 'N/A'})`;
-              renderSongs(songs);
+              showSongs(songs);
             }
           });
       } else {
@@ -489,7 +579,7 @@
         const song = songs[0];
         if (song) {
           song.desc = files.map(f => `${f.name} (${formatSize(f.size)})`).join(' · ');
-          renderSongs(songs);
+          showSongs(songs);
         }
       }
 
@@ -504,12 +594,67 @@
     } else if (!prompt) {
       showNBeatProgress('⚠️ 未找到输出文件');
     }
+
+    // Show refine panel
+    const refinePanel = document.getElementById('refinePanel');
+    if (refinePanel) refinePanel.style.display = 'block';
+  }
+
+  // ============================================
+  // NBeat: Refine button
+  // ============================================
+
+  let activeWorkDir = null;  // currently selected beat for refinement
+
+  const refineBtn = document.getElementById('refineBtn');
+  const refineInput = document.getElementById('refineInput');
+  const newBeatBtn = document.getElementById('newBeatBtn');
+
+  if (refineBtn && refineInput) {
+    refineBtn.addEventListener('click', () => {
+      const feedback = refineInput.value.trim();
+      if (!feedback || !nbeatWs) return;
+
+      const dir = activeWorkDir || (songs.length > 0 ? songs[0].workDir : null);
+      if (!dir) {
+        showNBeatProgress('⚠️ 没有可修改的 beat');
+        return;
+      }
+
+      showNBeatProgress(`🔄 Refining: ${feedback}`);
+      document.getElementById('refinePanel').style.display = 'none';
+      document.getElementById('promptOutput').style.display = 'none';
+
+      nbeatWs.send(JSON.stringify({
+        type: 'refine',
+        feedback,
+        workDir: dir,
+      }));
+    });
+  }
+
+  if (newBeatBtn) {
+    newBeatBtn.addEventListener('click', () => {
+      // Reset to fresh state
+      document.getElementById('refinePanel').style.display = 'none';
+      document.getElementById('promptOutput').style.display = 'none';
+      document.getElementById('progressPanel').style.display = 'none';
+      refineInput.value = '';
+      const stylesInput = document.querySelector('.styles-input');
+      if (stylesInput) stylesInput.value = '';
+      showNBeatProgress('🎧 Ready for new beat');
+    });
   }
 
   function playWavInPlayer(wavFile) {
-    stopPlayback(); // kill mock interval
+    stopPlayback();
     if (currentAudio) { currentAudio.pause(); currentAudio = null; }
     currentAudio = new Audio(wavFile.httpUrl);
+
+    // Find song index for this URL
+    currentSongIdx = songs.findIndex(s => s.wavUrl === wavFile.httpUrl);
+    updateSongName();
+    updateThumbStates();
     currentAudio.addEventListener('loadedmetadata', () => {
       totalSeconds = Math.round(currentAudio.duration) || 180;
       curSeconds = 0;
@@ -518,6 +663,7 @@
       updatePlayIcon();
     });
     currentAudio.addEventListener('timeupdate', () => {
+      if (dragging) return;  // Don't fight with user drag
       if (currentAudio) {
         curSeconds = Math.round(currentAudio.currentTime);
         totalSeconds = Math.round(currentAudio.duration) || 180;
@@ -526,10 +672,16 @@
       }
     });
     currentAudio.addEventListener('ended', () => {
-      playing = false;
-      progress = 0;
-      curSeconds = 0;
-      updatePlayIcon();
+      if (repeatMode) {
+        currentAudio.currentTime = 0;
+        currentAudio.play();
+      } else {
+        playing = false;
+        progress = 0;
+        curSeconds = 0;
+        updatePlayIcon();
+        playNext();
+      }
     });
     currentAudio.play().then(() => {
       playing = true;
@@ -618,6 +770,8 @@
     if (log) log.innerHTML = '';
     const output = document.getElementById('promptOutput');
     if (output) output.style.display = 'none';
+    const refinePanel = document.getElementById('refinePanel');
+    if (refinePanel) refinePanel.style.display = 'none';
 
     showNBeatProgress('📋 Building NBeat prompt...');
 
@@ -687,6 +841,64 @@
 
   connectNBeatWS();
   loadTemplates();
+  loadHistoryBeats();
+
+  async function loadHistoryBeats() {
+    try {
+      const resp = await fetch(`${API_BASE}/api/jobs`);
+      if (!resp.ok) return;
+      const jobs = await resp.json();
+      if (!jobs.length) return;
+
+      for (const job of jobs) {
+        const wavFile = job.files.find(f => f.type === 'audio/wav');
+        const sunoFile = job.files.find(f => f.name === 'Suno_Prompt.txt');
+
+        const thumbs = ['lightning', 'waveform', 'spiral', 'grid', 'dots', 'sphere', 'stripes'];
+        const grads = [
+          ['#1a0033', '#3d1b6b', '#7b2cbf'],
+          ['#001f3f', '#003d7a', '#0066cc'],
+          ['#330033', '#660066', '#cc0066'],
+          ['#0d0d2b', '#1f0d4d', '#4d1f8c'],
+          ['#0a1a0a', '#1a3d1a', '#2d6b2d'],
+        ];
+
+        songs.push({
+          title: `Beat #${songs.length + 1}`,
+          badge: '🎧 nbeat',
+          badgeType: 'v4',
+          desc: sunoFile ? 'Loading...' : job.files.map(f => f.name).join(' · '),
+          duration: '--:--',
+          thumb: thumbs[Math.floor(Math.random() * thumbs.length)],
+          gradient: grads[Math.floor(Math.random() * grads.length)],
+          wavUrl: wavFile?.httpUrl || null,
+          sunoUrl: sunoFile?.httpUrl || null,
+          workDir: job.workDir,
+          files: job.files,
+          cta: null,
+        });
+      }
+
+      showSongs(songs);
+
+      // Fetch Suno prompts — update title + desc
+      for (const song of songs) {
+        if (song.sunoUrl) {
+          fetch(song.sunoUrl)
+            .then(r => r.text())
+            .then(text => {
+              const t = text.trim();
+              song.desc = t + ` (${t.length} chars)`;
+              song.title = t.slice(0, 20) + (t.length > 20 ? '…' : '');
+              showSongs(songs);
+            })
+            .catch(() => {});
+        }
+      }
+    } catch (e) {
+      console.warn('[nbeat] Cannot load history:', e.message);
+    }
+  }
 
   // ============================================
   // Player bar
@@ -703,6 +915,10 @@
   let progress = 0;
   let totalSeconds = 0;
   let curSeconds = 0;
+  let currentSongIdx = -1;
+  let repeatMode = false;
+  let shuffleMode = false;
+  let dragging = false;
 
   function formatTime(s) {
     if (!s || s <= 0) return '--:--';
@@ -763,34 +979,152 @@
     });
   }
 
-  // Drag/scrub progress (supports real audio seeking)
-  if (progTrack) {
-    let dragging = false;
-    function seekFromEvent(e) {
-      const rect = progTrack.getBoundingClientRect();
-      const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
-      const pct = Math.max(0, Math.min(100, (x / rect.width) * 100));
-      progress = pct;
-      curSeconds = Math.round((pct / 100) * totalSeconds);
-      renderProgress();
+  // ── Next / Prev / Repeat / Shuffle ──────────────────
 
-      // Seek real audio if playing
-      if (currentAudio && currentAudio.duration) {
-        currentAudio.currentTime = (pct / 100) * currentAudio.duration;
+  function getPlayableSongs() {
+    return songs.map((s, i) => ({ ...s, idx: i })).filter(s => s.wavUrl);
+  }
+  function playNext() {
+    const pl = getPlayableSongs();
+    if (!pl.length) return;
+    let n;
+    if (shuffleMode) n = pl[Math.floor(Math.random() * pl.length)];
+    else if (currentSongIdx >= 0) {
+      const c = pl.findIndex(s => s.idx === currentSongIdx);
+      n = pl[(c + 1) % pl.length];
+    } else n = pl[0];
+    if (n) playWavInPlayer({ httpUrl: n.wavUrl, name: n.title });
+  }
+  function playPrev() {
+    const pl = getPlayableSongs();
+    if (!pl.length) return;
+    let p;
+    if (shuffleMode) p = pl[Math.floor(Math.random() * pl.length)];
+    else if (currentSongIdx >= 0) {
+      const c = pl.findIndex(s => s.idx === currentSongIdx);
+      p = pl[(c - 1 + pl.length) % pl.length];
+    } else p = pl[0];
+    if (p) playWavInPlayer({ httpUrl: p.wavUrl, name: p.title });
+  }
+  function updateSongName() {
+    const el = document.getElementById('songName');
+    if (el) el.textContent = (currentSongIdx >= 0 && songs[currentSongIdx]) ? songs[currentSongIdx].title || '' : '';
+  }
+  function updateThumbStates() {
+    document.querySelectorAll('.song-thumb').forEach(t => {
+      t.classList.remove('playing');
+      const overlay = t.querySelector('.play-overlay svg');
+      if (overlay) overlay.innerHTML = '<path d="M8 5v14l11-7z"/>';
+    });
+    if (currentSongIdx >= 0) {
+      const t = document.querySelector('.song-thumb[data-idx="' + currentSongIdx + '"]');
+      if (t) {
+        t.classList.add('playing');
+        const overlay = t.querySelector('.play-overlay svg');
+        if (overlay) overlay.innerHTML = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
       }
     }
-    progTrack.addEventListener('mousedown', (e) => {
+  }
+  document.querySelector('.player-bar [aria-label="Next"]')?.addEventListener('click', playNext);
+  document.querySelector('.player-bar [aria-label="Previous"]')?.addEventListener('click', playPrev);
+  document.querySelector('.player-bar [aria-label="Repeat"]')?.addEventListener('click', function() {
+    repeatMode = !repeatMode;
+    this.style.color = repeatMode ? 'var(--accent)' : '';
+  });
+  document.querySelector('.player-bar [aria-label="Shuffle"]')?.addEventListener('click', function() {
+    shuffleMode = !shuffleMode;
+    this.style.color = shuffleMode ? 'var(--accent)' : '';
+  });
+
+  // Drag/scrub — use player-progress as the full clickable area
+  const playerProgress = document.querySelector('.player-progress');
+  if (playerProgress) {
+    let wasPlaying = false;
+
+    function getProgressPct(e) {
+      const rect = playerProgress.getBoundingClientRect();
+      const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+      return Math.max(0, Math.min(100, (x / rect.width) * 100));
+    }
+
+    function seekTo(pct) {
+      progress = pct;
+      if (currentAudio && currentAudio.duration && !isNaN(currentAudio.duration)) {
+        const targetTime = (pct / 100) * currentAudio.duration;
+        currentAudio.currentTime = targetTime;
+      } else if (!totalSeconds || totalSeconds === 0) {
+        // No audio loaded yet, just update visual
+        curSeconds = Math.round((pct / 100) * 180);
+        totalSeconds = 180;
+      }
+      renderProgress();
+    }
+
+    playerProgress.addEventListener('mousedown', (e) => {
       dragging = true;
-      seekFromEvent(e);
+      wasPlaying = playing;
+      const pct = getProgressPct(e);
+      
+      if (currentAudio && currentAudio.duration && !isNaN(currentAudio.duration)) {
+        const target = (pct / 100) * currentAudio.duration;
+        currentAudio.currentTime = target;
+        // Update visual immediately
+        curSeconds = Math.round(target);
+        totalSeconds = Math.round(currentAudio.duration);
+        progress = pct;
+        renderProgress();
+        
+        const onSeeked = () => {
+          currentAudio.removeEventListener('seeked', onSeeked);
+          clearTimeout(fallback);
+          currentAudio.play().then(() => {
+            playing = true;
+            updatePlayIcon();
+          }).catch(() => {});
+        };
+        currentAudio.addEventListener('seeked', onSeeked);
+        const fallback = setTimeout(() => {
+          currentAudio.removeEventListener('seeked', onSeeked);
+          currentAudio.play().then(() => {
+            playing = true;
+            updatePlayIcon();
+          }).catch(() => {});
+        }, 500);
+      } else {
+        seekTo(pct);
+      }
     });
+
     document.addEventListener('mousemove', (e) => {
-      if (dragging) seekFromEvent(e);
+      if (dragging) seekTo(getProgressPct(e));
     });
+
     document.addEventListener('mouseup', () => {
+      if (dragging && currentAudio && wasPlaying) {
+        currentAudio.play().catch(() => {});
+        playing = true;
+        updatePlayIcon();
+      }
       dragging = false;
     });
-    progTrack.addEventListener('click', seekFromEvent);
   }
+
+  // ============================================
+  // Show songs (with pagination state)
+  // ============================================
+
+  function showSongs(data) {
+    currentData = data;
+    currentPage = 1;
+    renderSongs(data, 1);
+    updatePager();
+  }
+
+  // Pager buttons
+  const prevBtn = document.querySelector('.pager-btn:first-child');
+  const nextBtn = document.querySelector('.pager-btn:last-child');
+  if (prevBtn) prevBtn.addEventListener('click', () => goToPage(currentPage - 1));
+  if (nextBtn) nextBtn.addEventListener('click', () => goToPage(currentPage + 1));
 
   // ============================================
   // Search filter
@@ -801,13 +1135,13 @@
     searchInput.addEventListener('input', (e) => {
       const q = e.target.value.trim().toLowerCase();
       if (!q) {
-        renderSongs(songs);
+        showSongs(songs);
         return;
       }
       const filtered = songs.filter(
         (s) => s.title.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q)
       );
-      renderSongs(filtered);
+      showSongs(filtered);
     });
   }
   renderProgress();

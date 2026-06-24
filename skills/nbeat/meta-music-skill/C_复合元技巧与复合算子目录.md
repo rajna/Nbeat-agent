@@ -1,423 +1,106 @@
 # 目录C：复合元技巧与复合算子目录
 
-来源：part10_增量归并转化.md + part12_增量归并转化.md，按分析原则2.1复合层规则转化。
-复合技巧判断基于数据中的显式 `is_composite:true` 标记。
-
-## 复合元技巧目录 (MCT)
-
-| MCT | 驱动 | MT维度 | 组合关系 | 子结构 | 实例数 | 判断依据 |
-|---|---|---|---|---|---|---|
-| MCT_1 | 循环和弦骨架 | MT_ton, MT_chord, MT_motif |  | — | 57 | 有主结构 harmonic_cycle
- 两个以上 MT/OP 组成同一个制作机制
- 技巧可迁移到其他歌曲或风格
- 原技 |
-| MCT_2 | 主属下属轴 | MT_ton, MT_chord |  | — | 57 | 有主结构 harmonic_cycle
- 两个以上 MT/OP 组成同一个制作机制
- 技巧可迁移到其他歌曲或风格
- 原技 |
-| MCT_3 | 低音错位悬浮 | MT_chord, MT_ton |  | — | 57 | 有主结构 bass_motion
- 两个以上 MT/OP 组成同一个制作机制
- 技巧可迁移到其他歌曲或风格
- 原技巧存在 |
-| MCT_4 | 高频音级锚 | MT_motif, MT_melody |  | — | 57 | 有主结构 vocal_motif
- 两个以上 MT/OP 组成同一个制作机制
- 技巧可迁移到其他歌曲或风格
- 原技巧存在 |
-| MCT_5 | 级跳比例控制 | MT_melody |  | — | 57 | 有主结构 recitative_line
- 两个以上 MT/OP 组成同一个制作机制
- 技巧可迁移到其他歌曲或风格
- 原 |
-| MCT_6 | 短值推动语气 | MT_groove, MT_dynamic |  | — | 57 | 有主结构 polyrhythm_grouping
- 两个以上 MT/OP 组成同一个制作机制
- 技巧可迁移到其他歌曲或风 |
-| MCT_7 | 非正拍进入 | MT_groove |  | — | 57 | 有主结构 syncopation_layout
- 两个以上 MT/OP 组成同一个制作机制
- 技巧可迁移到其他歌曲或风格 |
-| MCT_8 | 休止断句设计 | MT_texture |  | — | 57 | 有主结构 sparse_density
- 两个以上 MT/OP 组成同一个制作机制
- 技巧可迁移到其他歌曲或风格
- 原技 |
-| MCT_9 | 尾部收束钩子 | MT_time, MT_chord |  | — | 57 | 有主结构 form_loop_extension
- 两个以上 MT/OP 组成同一个制作机制
- 技巧可迁移到其他歌曲或风 |
-| MCT_10 | 声部功能分层 | MT_texture, MT_space, MT_timbre |  | — | 57 | 有主结构 layer_breath
- 两个以上 MT/OP 组成同一个制作机制
- 技巧可迁移到其他歌曲或风格
- 原技巧存 |
-| MCT_11 | tonal_center | MT_ton | lock | melody, chord, phrase | 26 | 调性布局 由 MT_ton.OP_anchor 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数共同构成可迁移制作机 |
-| MCT_12 | data_emotion_curve | MT_texture | infer | emotion, form | 26 | 情绪逻辑 由 MT_texture.OP_emotion_curve 承担主机制，并与原技巧中的旋律/和声/节奏/句法参 |
-| MCT_13 | harmonic_cycle | MT_chord | organize | tonality, melody, memory | 25 | 和声进行 由 MT_chord.OP_harmonic_cycle 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数 |
-| MCT_14 | harmonic_rhythm | MT_chord | pace | melody_density, form_breath | 25 | 和声节奏 由 MT_chord.OP_harmonic_cycle 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数 |
-| MCT_15 | bass_outline | MT_chord | ground | harmony, groove, body | 25 | 低音线推导 由 MT_chord.OP_bass_motion 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数共同 |
-| MCT_16 | voicing_detail | MT_chord | preserve | bass_motion, cadence_color | 25 | 和弦编排 由 MT_chord.OP_extension_stack 承担主机制，并与原技巧中的旋律/和声/节奏/句法参 |
-| MCT_17 | cadence_loop | MT_chord | return | harmonic_cycle, replay | 25 | 终止回环 由 MT_chord.OP_cadence_motion 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数 |
-| MCT_18 | harmonic_sectioning | MT_time | segment | chord_cycle, arrangement | 25 | 曲式结构 由 MT_time.OP_form_loop_extension 承担主机制，并与原技巧中的旋律/和声/节奏/ |
-| MCT_19 | degree_profile | MT_melody | profile | motif, memory | 25 | 旋律音级 由 MT_melody.OP_recitative_line 承担主机制，并与原技巧中的旋律/和声/节奏/句法 |
-| MCT_20 | register_range | MT_melody | range | melody_identity | 25 | 音域布局 由 MT_melody.OP_low_register_narration 承担主机制，并与原技巧中的旋律/和 |
-| MCT_21 | interval_profile | MT_melody | shape | vocality, memory | 25 | 音符形态 由 MT_melody.OP_recitative_line 承担主机制，并与原技巧中的旋律/和声/节奏/句法 |
-| MCT_22 | duration_profile | MT_groove | speechrate | melody, groove | 25 | 节奏型 由 MT_groove.OP_polyrhythm_grouping 承担主机制，并与原技巧中的旋律/和声/节奏 |
-| MCT_23 | syncopation_layout | MT_groove | syncopate | melody, groove | 25 | 起音切分 由 MT_groove.OP_syncopation_layout 承担主机制，并与原技巧中的旋律/和声/节奏 |
-| MCT_24 | motif_variation | MT_motif | vary | melody, memory | 25 | 动机发展 由 MT_motif.OP_micro_variation 承担主机制，并与原技巧中的旋律/和声/节奏/句法参 |
-| MCT_25 | melody_harmony_counterpoint | MT_voice | balance | melody, chord, emotion | 24 | 旋律和声关系 由 MT_voice.OP_linear_counterpoint 承担主机制，并与原技巧中的旋律/和声/ |
-| MCT_26 | nonchord_tone_placement | MT_voice | place | tension, phrasing | 24 | 张力音落点 由 MT_voice.OP_linear_counterpoint 承担主机制，并与原技巧中的旋律/和声/节 |
-| MCT_27 | slow_harmony_fast_melody | MT_texture | layer | harmony, melody, texture | 24 | 和声旋律分工 由 MT_texture.OP_static_sustain_field 承担主机制，并与原技巧中的旋律/ |
-| MCT_28 | phrase_density | MT_texture | space | texture, phrase | 14 | 句法密度 由 MT_texture.OP_sparse_density 承担主机制，并与原技巧中的旋律/和声/节奏/句法 |
-| MCT_29 | rest_punctuation | MT_groove | breathe | phrase, groove | 11 | 休止句法 由 MT_groove.OP_syncopation_layout 承担主机制，并与原技巧中的旋律/和声/节奏 |
-| MCT_30 | parameter_preserve_rewrite | MT_motif | transfer | creation, replay | 2 | 创作迁移 由 MT_motif.OP_micro_variation 承担主机制，并与原技巧中的旋律/和声/节奏/句法参 |
-| MCT_31 | missing_melody_guard | MT_melody | guard | analysis_scope | 1 | 旋律缺席 由 MT_melody.OP_melody_rewrite 承担主机制，并与原技巧中的旋律/和声/节奏/句法参 |
-| MCT_32 | missing_harmony_guard | MT_chord | guard | analysis_scope | 1 | 和声缺席 由 MT_chord.OP_synthesis 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数共同构成可 |
-
-共 32 个复合技巧
-
-## 复合技巧详情
-
-### 循环和弦骨架
-
-- **驱动结构**: 循环和弦骨架
-- **MT维度**: MT_ton, MT_chord, MT_motif
-- **组合关系**: 
-- **子结构**: —
-- **实例数**: 57
-- **判断依据**: 有主结构 harmonic_cycle
- 两个以上 MT/OP 组成同一个制作机制
- 技巧可迁移到其他歌曲或风格
- 原技巧存在驱动、锁定、分层、推动、释放或回环关系
-- **涉及OP**: OP_anchor, OP_harmonic_cycle, OP_micro_variation
-
-### 主属下属轴
-
-- **驱动结构**: 主属下属轴
-- **MT维度**: MT_ton, MT_chord
-- **组合关系**: 
-- **子结构**: —
-- **实例数**: 57
-- **判断依据**: 有主结构 harmonic_cycle
- 两个以上 MT/OP 组成同一个制作机制
- 技巧可迁移到其他歌曲或风格
- 原技巧存在驱动、锁定、分层、推动、释放或回环关系
-- **涉及OP**: OP_anchor, OP_harmonic_cycle, OP_cadence_motion
-
-### 低音错位悬浮
-
-- **驱动结构**: 低音错位悬浮
-- **MT维度**: MT_chord, MT_ton
-- **组合关系**: 
-- **子结构**: —
-- **实例数**: 57
-- **判断依据**: 有主结构 bass_motion
- 两个以上 MT/OP 组成同一个制作机制
- 技巧可迁移到其他歌曲或风格
- 原技巧存在驱动、锁定、分层、推动、释放或回环关系
-- **涉及OP**: OP_bass_motion, OP_root_avoid, OP_anchor
-
-### 高频音级锚
-
-- **驱动结构**: 高频音级锚
-- **MT维度**: MT_motif, MT_melody
-- **组合关系**: 
-- **子结构**: —
-- **实例数**: 57
-- **判断依据**: 有主结构 vocal_motif
- 两个以上 MT/OP 组成同一个制作机制
- 技巧可迁移到其他歌曲或风格
- 原技巧存在驱动、锁定、分层、推动、释放或回环关系
-- **涉及OP**: OP_vocal_motif, OP_micro_variation, OP_recitative_line
-
-### 级跳比例控制
-
-- **驱动结构**: 级跳比例控制
-- **MT维度**: MT_melody
-- **组合关系**: 
-- **子结构**: —
-- **实例数**: 57
-- **判断依据**: 有主结构 recitative_line
- 两个以上 MT/OP 组成同一个制作机制
- 技巧可迁移到其他歌曲或风格
- 原技巧存在驱动、锁定、分层、推动、释放或回环关系
-- **涉及OP**: OP_recitative_line, OP_descending_melody
-
-### 短值推动语气
-
-- **驱动结构**: 短值推动语气
-- **MT维度**: MT_groove, MT_dynamic
-- **组合关系**: 
-- **子结构**: —
-- **实例数**: 57
-- **判断依据**: 有主结构 polyrhythm_grouping
- 两个以上 MT/OP 组成同一个制作机制
- 技巧可迁移到其他歌曲或风格
- 原技巧存在驱动、锁定、分层、推动、释放或回环关系
-- **涉及OP**: OP_polyrhythm_grouping, OP_density_dynamic
-
-### 非正拍进入
-
-- **驱动结构**: 非正拍进入
-- **MT维度**: MT_groove
-- **组合关系**: 
-- **子结构**: —
-- **实例数**: 57
-- **判断依据**: 有主结构 syncopation_layout
- 两个以上 MT/OP 组成同一个制作机制
- 技巧可迁移到其他歌曲或风格
- 原技巧存在驱动、锁定、分层、推动、释放或回环关系
-- **涉及OP**: OP_syncopation_layout, OP_lock
-
-### 休止断句设计
-
-- **驱动结构**: 休止断句设计
-- **MT维度**: MT_texture
-- **组合关系**: 
-- **子结构**: —
-- **实例数**: 57
-- **判断依据**: 有主结构 sparse_density
- 两个以上 MT/OP 组成同一个制作机制
- 技巧可迁移到其他歌曲或风格
- 原技巧存在驱动、锁定、分层、推动、释放或回环关系
-- **涉及OP**: OP_sparse_density, OP_layer_breath
-
-### 尾部收束钩子
-
-- **驱动结构**: 尾部收束钩子
-- **MT维度**: MT_time, MT_chord
-- **组合关系**: 
-- **子结构**: —
-- **实例数**: 57
-- **判断依据**: 有主结构 form_loop_extension
- 两个以上 MT/OP 组成同一个制作机制
- 技巧可迁移到其他歌曲或风格
- 原技巧存在驱动、锁定、分层、推动、释放或回环关系
-- **涉及OP**: OP_form_loop_extension, OP_cadence_delay
-
-### 声部功能分层
-
-- **驱动结构**: 声部功能分层
-- **MT维度**: MT_texture, MT_space, MT_timbre
-- **组合关系**: 
-- **子结构**: —
-- **实例数**: 57
-- **判断依据**: 有主结构 layer_breath
- 两个以上 MT/OP 组成同一个制作机制
- 技巧可迁移到其他歌曲或风格
- 原技巧存在驱动、锁定、分层、推动、释放或回环关系
-- **涉及OP**: OP_layer_breath, OP_frequency_separation, OP_glue
-
-### 单调中心压缩
-
-- **驱动结构**: tonal_center
-- **MT维度**: MT_ton
-- **组合关系**: lock
-- **子结构**: melody, chord, phrase
-- **实例数**: 26
-- **判断依据**: 调性布局 由 MT_ton.OP_anchor 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数共同构成可迁移制作机制。
-- **涉及OP**: OP_anchor
-
-### 数据情绪推导
-
-- **驱动结构**: data_emotion_curve
-- **MT维度**: MT_texture
-- **组合关系**: infer
-- **子结构**: emotion, form
-- **实例数**: 26
-- **判断依据**: 情绪逻辑 由 MT_texture.OP_emotion_curve 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数共同构成可迁移制作机制。
-- **涉及OP**: OP_emotion_curve
-
-### 级数骨架迁移
-
-- **驱动结构**: harmonic_cycle
-- **MT维度**: MT_chord
-- **组合关系**: organize
-- **子结构**: tonality, melody, memory
-- **实例数**: 25
-- **判断依据**: 和声进行 由 MT_chord.OP_harmonic_cycle 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数共同构成可迁移制作机制。
-- **涉及OP**: OP_harmonic_cycle
-
-### 换和弦呼吸
-
-- **驱动结构**: harmonic_rhythm
-- **MT维度**: MT_chord
-- **组合关系**: pace
-- **子结构**: melody_density, form_breath
-- **实例数**: 25
-- **判断依据**: 和声节奏 由 MT_chord.OP_harmonic_cycle 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数共同构成可迁移制作机制。
-- **涉及OP**: OP_harmonic_cycle
-
-### 根转位低音影线
-
-- **驱动结构**: bass_outline
-- **MT维度**: MT_chord
-- **组合关系**: ground
-- **子结构**: harmony, groove, body
-- **实例数**: 25
-- **判断依据**: 低音线推导 由 MT_chord.OP_bass_motion 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数共同构成可迁移制作机制。
-- **涉及OP**: OP_bass_motion
-
-### 转位借用保留
-
-- **驱动结构**: voicing_detail
-- **MT维度**: MT_chord
-- **组合关系**: preserve
-- **子结构**: bass_motion, cadence_color
-- **实例数**: 25
-- **判断依据**: 和弦编排 由 MT_chord.OP_extension_stack 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数共同构成可迁移制作机制。
-- **涉及OP**: OP_extension_stack
-
-### 尾部张力再入口
-
-- **驱动结构**: cadence_loop
-- **MT维度**: MT_chord
-- **组合关系**: return
-- **子结构**: harmonic_cycle, replay
-- **实例数**: 25
-- **判断依据**: 终止回环 由 MT_chord.OP_cadence_motion 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数共同构成可迁移制作机制。
-- **涉及OP**: OP_cadence_motion
-
-### 和声周期分段
-
-- **驱动结构**: harmonic_sectioning
-- **MT维度**: MT_time
-- **组合关系**: segment
-- **子结构**: chord_cycle, arrangement
-- **实例数**: 25
-- **判断依据**: 曲式结构 由 MT_time.OP_form_loop_extension 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数共同构成可迁移制作机制。
-- **涉及OP**: OP_form_loop_extension
-
-### 高频音级画像
-
-- **驱动结构**: degree_profile
-- **MT维度**: MT_melody
-- **组合关系**: profile
-- **子结构**: motif, memory
-- **实例数**: 25
-- **判断依据**: 旋律音级 由 MT_melody.OP_recitative_line 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数共同构成可迁移制作机制。
-- **涉及OP**: OP_recitative_line
-
-### 窄域身份稳定
-
-- **驱动结构**: register_range
-- **MT维度**: MT_melody
-- **组合关系**: range
-- **子结构**: melody_identity
-- **实例数**: 25
-- **判断依据**: 音域布局 由 MT_melody.OP_low_register_narration 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数共同构成可迁移制作机制。
-- **涉及OP**: OP_low_register_narration
-
-### 步进跳进配比
-
-- **驱动结构**: interval_profile
-- **MT维度**: MT_melody
-- **组合关系**: shape
-- **子结构**: vocality, memory
-- **实例数**: 25
-- **判断依据**: 音符形态 由 MT_melody.OP_recitative_line 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数共同构成可迁移制作机制。
-- **涉及OP**: OP_recitative_line
-
-### 时值语速控制
-
-- **驱动结构**: duration_profile
-- **MT维度**: MT_groove
-- **组合关系**: speechrate
-- **子结构**: melody, groove
-- **实例数**: 25
-- **判断依据**: 节奏型 由 MT_groove.OP_polyrhythm_grouping 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数共同构成可迁移制作机制。
-- **涉及OP**: OP_polyrhythm_grouping
-
-### 网格落点偏好
-
-- **驱动结构**: syncopation_layout
-- **MT维度**: MT_groove
-- **组合关系**: syncopate
-- **子结构**: melody, groove
-- **实例数**: 25
-- **判断依据**: 起音切分 由 MT_groove.OP_syncopation_layout 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数共同构成可迁移制作机制。
-- **涉及OP**: OP_syncopation_layout
-
-### 三音组低变体
-
-- **驱动结构**: motif_variation
-- **MT维度**: MT_motif
-- **组合关系**: vary
-- **子结构**: melody, memory
-- **实例数**: 25
-- **判断依据**: 动机发展 由 MT_motif.OP_micro_variation 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数共同构成可迁移制作机制。
-- **涉及OP**: OP_micro_variation
-
-### 和弦音摩擦率
-
-- **驱动结构**: melody_harmony_counterpoint
-- **MT维度**: MT_voice
-- **组合关系**: balance
-- **子结构**: melody, chord, emotion
-- **实例数**: 24
-- **判断依据**: 旋律和声关系 由 MT_voice.OP_linear_counterpoint 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数共同构成可迁移制作机制。
-- **涉及OP**: OP_linear_counterpoint
-
-### 非和弦音句法
-
-- **驱动结构**: nonchord_tone_placement
-- **MT维度**: MT_voice
-- **组合关系**: place
-- **子结构**: tension, phrasing
-- **实例数**: 24
-- **判断依据**: 张力音落点 由 MT_voice.OP_linear_counterpoint 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数共同构成可迁移制作机制。
-- **涉及OP**: OP_linear_counterpoint
-
-### 慢底快线叠层
-
-- **驱动结构**: slow_harmony_fast_melody
-- **MT维度**: MT_texture
-- **组合关系**: layer
-- **子结构**: harmony, melody, texture
-- **实例数**: 24
-- **判断依据**: 和声旋律分工 由 MT_texture.OP_static_sustain_field 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数共同构成可迁移制作机制。
-- **涉及OP**: OP_static_sustain_field
-
-### 无休止连续线
-
-- **驱动结构**: phrase_density
-- **MT维度**: MT_texture
-- **组合关系**: space
-- **子结构**: texture, phrase
-- **实例数**: 14
-- **判断依据**: 句法密度 由 MT_texture.OP_sparse_density 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数共同构成可迁移制作机制。
-- **涉及OP**: OP_sparse_density
-
-### 空拍标点切句
-
-- **驱动结构**: rest_punctuation
-- **MT维度**: MT_groove
-- **组合关系**: breathe
-- **子结构**: phrase, groove
-- **实例数**: 11
-- **判断依据**: 休止句法 由 MT_groove.OP_syncopation_layout 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数共同构成可迁移制作机制。
-- **涉及OP**: OP_syncopation_layout
-
-### 参数保真换皮
-
-- **驱动结构**: parameter_preserve_rewrite
-- **MT维度**: MT_motif
-- **组合关系**: transfer
-- **子结构**: creation, replay
-- **实例数**: 2
-- **判断依据**: 创作迁移 由 MT_motif.OP_micro_variation 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数共同构成可迁移制作机制。
-- **涉及OP**: OP_micro_variation
-
-### 和声骨架独立
-
-- **驱动结构**: missing_melody_guard
-- **MT维度**: MT_melody
-- **组合关系**: guard
-- **子结构**: analysis_scope
-- **实例数**: 1
-- **判断依据**: 旋律缺席 由 MT_melody.OP_melody_rewrite 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数共同构成可迁移制作机制。
-- **涉及OP**: OP_melody_rewrite
-
-### 旋律孤立分析
-
-- **驱动结构**: missing_harmony_guard
-- **MT维度**: MT_chord
-- **组合关系**: guard
-- **子结构**: analysis_scope
-- **实例数**: 1
-- **判断依据**: 和声缺席 由 MT_chord.OP_synthesis 承担主机制，并与原技巧中的旋律/和声/节奏/句法参数共同构成可迁移制作机制。
-- **涉及OP**: OP_synthesis
-
+来源：part10 + part12 + part13 + part14 增量归并。1353条技巧 → 复合层提取。
+复合技巧 = 多个MT通过组合关系形成可迁移制作机制。
+
+## 复合技巧公式
+
+### COP_density_form（密度形态）
+`MT_texture(OP_sparse_density) ⊕ MT_dynamic(OP_crescendo_track)`
+- 描述：从稀疏到密集的织体变化曲线。Verse极简→Chorus满编，或Intro薄→Bridge厚→Drop炸
+- 参数键：density_level, dynamic_delta, transition_type, section_map
+- 来源实例：频段阶梯堆叠术、窒息桥段爆破术、从卧室到剧场爆破术
+
+### COP_style_graft（风格嫁接）
+`MT_timbre(OP_style_graft) ⊕ MT_groove(OP_drum_rekit)`
+- 描述：将风格A的音色/律动嫁接到风格B的骨架。70s放克+数控量化、乡村+Trap鼓组
+- 参数键：source_style, target_style, graft_point, blend_ratio
+- 来源实例：复古放克数控术、陷阱乡村频段隔离术、千禧年Hip-Hop乡村化术
+
+### COP_depth_contrast（纵深反差）
+`MT_space(OP_depth_layer) ⊕ MT_space(OP_close_dry_recording) ⊕ MT_space(OP_reverb_field)`
+- 描述：极近场+极远场的声音纵深对比。1cm人声+10m弦乐=窒息感
+- 参数键：near_depth, far_depth, near_reverb, far_reverb, contrast_ratio
+- 来源实例：ASMR窒息纵深术、近场耳语+远场Jersey术、宽广混响人声悬浮术
+
+### COP_frequency_isolation（频段隔离）
+`MT_space(OP_frequency_separation) ⊕ MT_timbre(OP_frequency_strip) ⊕ MT_groove(OP_synth_pulse)`
+- 描述：各乐器独占非重叠频段。808=40-80Hz, 吉他=1-3kHz, 中频留空
+- 参数键：band_map, isolation_strength, empty_bands
+- 来源实例：陷阱乡村频段隔离术、卧室Indie频段隔离术、极低频压迫声场术
+
+### COP_sidechain_breathing（侧链呼吸）
+`MT_groove(OP_sidechain_pump) ⊕ MT_timbre(OP_synthesis)`
+- 描述：底鼓触发侧链压缩，每拍抽空中高频，制造吸气-呼气律动
+- 参数键：pump_source, pump_target, pump_ratio, pump_rhythm
+- 来源实例：4/4底鼓+侧链呼吸术、超清合成器侧链呼吸术
+
+### COP_timbre_collision（音色碰撞）
+`MT_timbre(OP_timbre_collision) ⊕ MT_timbre(OP_sample_body_variation)`
+- 描述：两个对立音色在同一空间碰撞。复古采样幽灵 vs 超现代Autotune
+- 参数键：source_a, source_b, collision_type, contrast_level
+- 来源实例：灵魂采样失真幽灵术、经典Rick James降维术、千禧年流行切片循环术
+
+### COP_emotional_crescendo（情绪渐强）
+`MT_dynamic(OP_crescendo_track) ⊕ MT_orch(OP_dialogue_orchestration) ⊕ MT_emotion(OP_imagery_bind)`
+- 描述：力度+配器+意象同步渐强。pp钢琴→ff全员+合唱，物理感受=从卧室到剧场
+- 参数键：start_dynamic, end_dynamic, orchestration_layers, imagery_target
+- 来源实例：歌剧院级渐强爆破术、祈祷到嘶吼的抛物线术
+
+### COP_cultural_suture（文化缝合）
+`MT_timbre(OP_cultural_collage) ⊕ MT_groove(OP_synth_pulse) ⊕ MT_groove(OP_drum_rekit)`
+- 描述：跨文化音色+节奏缝合。三味线+808、管风琴失真+减七和弦
+- 参数键：cultural_source, target_genre, fusion_method
+- 来源实例：三味线808东西融合术、失真管风琴异教术
+
+### COP_sample_deconstruction（采样解构）
+`MT_timbre(OP_reharmonize_sample) ⊕ MT_timbre(OP_pitchdown_coloring) ⊕ MT_timbre(OP_lpf_cloud)`
+- 描述：采样→降调/降速/滤波/失真→变成新声音。致敬变绑架
+- 参数键：sample_source, speed_change, pitch_change, filter_cutoff, distortion_level
+- 来源实例：西海岸采样降维术、怀旧失真婚礼采样术
+
+### COP_vocal_spatial_counterpoint（人声空间对位）
+`MT_voice(OP_collab_counterpoint) ⊕ MT_space(OP_depth_layer) ⊕ MT_space(OP_frequency_separation)`
+- 描述：多人声在不同纵深+频段对位。近场恳求+中距威胁+远场回声
+- 参数键：voice_positions, depth_assignments, frequency_assignments
+- 来源实例：三层人声纵深对位术、双频段性别对位术、跨时空双声部术
+
+### COP_beat_globalization（鼓组全球化）
+`MT_groove(OP_drum_rekit) ⊕ MT_rhythm(OP_syncopation_layout) ⊕ MT_groove(OP_microtiming_swing)`
+- 描述：将特定地域鼓组风格+切分+Swing组合。Afrobeats/Jersey/UKG/Corridos
+- 参数键：drum_style, syncopation_type, swing_amount, kick_pattern
+- 来源实例：Afrobeats滑步碎拍术、Jersey Club碎拍心跳术、Corridos Tumbados低音驱动术
+
+### COP_micro_offset_feel（微偏移感觉）
+`MT_melody(OP_micro_offset) ⊕ MT_groove(OP_microtiming_swing) ⊕ MT_melody(OP_recitative_line)`
+- 描述：人声微偏移+Swing+口语化=犹豫/抢拍/冷感。±10-25ms改变整个性格
+- 参数键：offset_ms, swing_percent, recitative_density
+- 来源实例：呢喃式切分口语术、千禧年半拍悬浮术、口语化断奏上抛术
+
+### COP_frequency_emergence（频段浮现）
+`MT_frequency_expansion(OP_frequency_breath) ⊕ MT_texture(OP_sparse_density)`
+- 描述：从窄频逐渐扩展到全频。回忆从模糊到清晰、能量从低到高
+- 参数键：start_band, end_band, emergence_speed, section_target
+- 来源实例：频段渐显回忆术、频段阶梯式堆叠术
+
+### COP_form_disruption（曲式破坏）
+`MT_time(OP_form_reset) ⊕ MT_time(OP_instant_drop) ⊕ MT_time(OP_tempo_disguise)`
+- 描述：曲式突变/速度伪装/瞬时坠落。打破期待制造冲击
+- 参数键：reset_section, new_context, drop_timing, tempo_shift_delta
+- 来源实例：突变速率情绪术、窒息桥段爆破术、双桥段合成器流行术
+
+### COP_imagery_physicalization（意象物理化）
+`MT_emotion(OP_imagery_bind) ⊕ MT_dynamic(OP_crescendo_track) ⊕ MT_melody(OP_descending_melody)`
+- 描述：将抽象情绪绑定到物理感受。"焦虑=向上螺旋" "释然=向下叹息"
+- 参数键：emotion_target, physical_metaphor, motion_direction, dynamic_arc
+- 来源实例：自我对话上行动机术（焦虑=上爬）、下行疑问叹息术（无力=下滑）
+
+### COP_vocal_architecture（人声建筑）
+`MT_orch(OP_vocal_pyramid) ⊕ MT_dynamic(OP_crescendo_track) ⊕ MT_voice(OP_collab_counterpoint)`
+- 描述：人声叠层从1轨到8轨渐厚，或多声部在不同纵深构建空间
+- 参数键：layer_count, layer_entry_order, layer_depth, layer_frequency
+- 来源实例：歌剧院级渐强爆破术（4-8轨叠录）、双Rapper频段隔离术
+
+---
+共 16 个 COP 复合算子
+来源：1353条技巧中检测到is_composite=true → 归并提取组合公式

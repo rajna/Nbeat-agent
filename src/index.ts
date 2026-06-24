@@ -11,7 +11,9 @@
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
+import { spawn, type ChildProcess } from "node:child_process";
 import * as fs from "node:fs";
+import * as http from "node:http";
 import * as path from "node:path";
 
 // ── Constants ──────────────────────────────────────────
@@ -19,8 +21,18 @@ import * as path from "node:path";
 const SKILL_DIR = path.resolve(__dirname, "..", "skills", "nbeat");
 const META_DIR = path.join(SKILL_DIR, "meta-music-skill");
 const TEMPLATE_DIR = path.join(SKILL_DIR, "templates");
-const UI_DIR = path.resolve(__dirname, "..", "ui", "demo");
+const UI_DIR = path.resolve(__dirname, "..", "ui", "demo3");
+const BRIDGE_PATH = path.resolve(__dirname, "..", "ui", "bridge.js");
 const BEATMAKESTEP_PATH = path.join(SKILL_DIR, "beatmakestep.md");
+
+// Bridge process reference (shared across commands)
+let bridgeProcess: ChildProcess | null = null;
+const WS_PORT = 8765;
+const UI_PORT = 8080;
+
+function isBridgeRunning(): boolean {
+  return bridgeProcess !== null && bridgeProcess.exitCode === null;
+}
 
 // Knowledge base files
 const KB_FILES: Record<string, string> = {
@@ -331,12 +343,108 @@ export default function (pi: ExtensionAPI) {
   pi.registerCommand("nbeat:ui", {
     description: "Launch the NBeat Web UI for interactive beat generation",
     handler: async (_args, ctx) => {
-      ctx.ui.notify(
-        "🎧 NBeat UI: Open the HTML file directly or serve with a local server.",
-        "info"
-      );
-      ctx.ui.notify(`UI files at: ${UI_DIR}`, "info");
-      ctx.ui.notify("Tip: use `python3 -m http.server 8080` in the ui/demo directory", "info");
+      // Check if port 8080 is already in use (possibly already running)
+      const alreadyRunning = await new Promise<boolean>((resolve) => {
+        const req = http.get(`http://localhost:${UI_PORT}/`, (res) => {
+          res.resume();
+          resolve(true);
+        });
+        req.on("error", () => resolve(false));
+        req.setTimeout(1000, () => { req.destroy(); resolve(false); });
+      });
+
+      if (alreadyRunning) {
+        ctx.ui.notify(
+          `🎧 NBeat Studio is already running at http://localhost:${UI_PORT}`,
+          "info"
+        );
+        ctx.ui.setStatus("nbeat", `🎧 NBeat Studio → http://localhost:${UI_PORT} | /nbeat:ui-stop to stop`);
+        return;
+      }
+
+      if (isBridgeRunning()) {
+        ctx.ui.notify("🎧 Bridge process exists but port not responding. Restarting...", "warning");
+        bridgeProcess?.kill();
+        bridgeProcess = null;
+      }
+
+      if (!fs.existsSync(BRIDGE_PATH)) {
+        ctx.ui.notify(`❌ Bridge not found at: ${BRIDGE_PATH}`, "error");
+        return;
+      }
+
+      ctx.ui.notify(`🎧 Launching NBeat Studio...`, "info");
+
+      bridgeProcess = spawn("node", [BRIDGE_PATH], {
+        stdio: "pipe",
+        env: { ...process.env },
+      });
+
+      bridgeProcess.stdout?.on("data", (data: Buffer) => {
+        // Silently consume stdout (bridge logs to its own console)
+      });
+
+      bridgeProcess.stderr?.on("data", (data: Buffer) => {
+        const msg = data.toString().trim();
+        if (msg) ctx.ui.notify(`[nbeat] ${msg}`, "info");
+      });
+
+      bridgeProcess.on("exit", (code) => {
+        bridgeProcess = null;
+        ctx.ui.setStatus("nbeat", `🎧 NBeat stopped (exit ${code}) | /nbeat:ui to restart`);
+      });
+
+      bridgeProcess.on("error", (err) => {
+        bridgeProcess = null;
+        ctx.ui.notify(`❌ Failed to start NBeat Studio: ${err.message}`, "error");
+        ctx.ui.setStatus("nbeat", `🎧 NBeat error | /nbeat:ui to retry`);
+      });
+
+      // Wait a moment for the server to start, then confirm
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      const ready = await new Promise<boolean>((resolve) => {
+        const req = http.get(`http://localhost:${UI_PORT}/`, (res) => {
+          res.resume();
+          resolve(true);
+        });
+        req.on("error", () => resolve(false));
+        req.setTimeout(2000, () => { req.destroy(); resolve(false); });
+      });
+
+      if (ready) {
+        ctx.ui.notify(
+          `🎧 NBeat Studio is live! Open http://localhost:${UI_PORT} in your browser`,
+          "success"
+        );
+        ctx.ui.setStatus(
+          "nbeat",
+          `🎧 NBeat Studio → http://localhost:${UI_PORT} | /nbeat:ui-stop to stop`
+        );
+      } else {
+        ctx.ui.notify(
+          `⚠️ Bridge started but UI not responding yet. Try http://localhost:${UI_PORT}`,
+          "warning"
+        );
+      }
+    },
+  });
+
+  // ========================================================
+  // Command: /nbeat:ui-stop — stop the Web UI server
+  // ========================================================
+  pi.registerCommand("nbeat:ui-stop", {
+    description: "Stop the NBeat Web UI server",
+    handler: async (_args, ctx) => {
+      if (!isBridgeRunning()) {
+        ctx.ui.notify("🎧 NBeat Studio is not running.", "info");
+        return;
+      }
+
+      bridgeProcess?.kill();
+      bridgeProcess = null;
+      ctx.ui.notify("🎧 NBeat Studio stopped.", "info");
+      ctx.ui.setStatus("nbeat", `🎧 NBeat stopped | /nbeat:ui to restart`);
     },
   });
 

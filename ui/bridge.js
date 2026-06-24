@@ -24,6 +24,7 @@ const crypto = require("crypto");
 // ── Config ─────────────────────────────────────────────
 const WS_PORT = parseInt(process.env.NBEAT_WS_PORT || "8765");
 const UI_PORT = parseInt(process.env.NBEAT_UI_PORT || "8080");
+const DRY_RUN = process.env.NBEAT_DRY_RUN === "1";
 const UI_DIR = path.resolve(__dirname, "..", "ui", "demo3");
 const NBEAT_DIR = path.resolve(__dirname, "..");
 const OUTPUT_DIR = path.join(process.env.HOME || "/tmp", ".nbeat", "output");
@@ -144,6 +145,35 @@ const MIME_TYPES = {
   ".py": "text/plain",
 };
 
+// ── Serve file with range support (needed for audio seeking) ─
+function serveFile(req, res, filePath, mimeType) {
+  const stat = fs.statSync(filePath);
+  const fileSize = stat.size;
+  const range = req.headers.range;
+
+  if (range) {
+    const parts = range.replace(/bytes=/, "").split("-");
+    const start = parseInt(parts[0], 10);
+    const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+    const chunkSize = (end - start) + 1;
+
+    res.writeHead(206, {
+      "Content-Range": `bytes ${start}-${end}/${fileSize}`,
+      "Accept-Ranges": "bytes",
+      "Content-Length": chunkSize,
+      "Content-Type": mimeType,
+    });
+    fs.createReadStream(filePath, { start, end }).pipe(res);
+  } else {
+    res.writeHead(200, {
+      "Content-Type": mimeType,
+      "Content-Length": fileSize,
+      "Accept-Ranges": "bytes",
+    });
+    fs.createReadStream(filePath).pipe(res);
+  }
+}
+
 // ── HTTP Server (UI + file serving) ────────────────────
 const httpServer = http.createServer((req, res) => {
   const url = new URL(req.url, `http://localhost:${UI_PORT}`);
@@ -174,6 +204,31 @@ const httpServer = http.createServer((req, res) => {
         res.end(JSON.stringify({ error: e.message }));
       }
     });
+    return;
+  }
+
+  // API: GET /api/jobs → list all generated beats
+  if (req.method === "GET" && url.pathname === "/api/jobs") {
+    const jobs = [];
+    if (fs.existsSync(OUTPUT_DIR)) {
+      for (const dir of fs.readdirSync(OUTPUT_DIR)) {
+        const jobDir = path.join(OUTPUT_DIR, dir);
+        if (!fs.statSync(jobDir).isDirectory() || !dir.startsWith("job_")) continue;
+        const files = scanOutputFiles(jobDir);
+        if (files.length === 0) continue;
+        jobs.push({
+          id: dir,
+          workDir: jobDir,
+          files: files.map(f => ({ name: f.name, type: f.type, size: f.size, httpUrl: f.httpUrl })),
+        });
+      }
+    }
+    // Sort by job dir modification time (newest first)
+    jobs.sort((a, b) => {
+      try { return fs.statSync(b.workDir).mtime - fs.statSync(a.workDir).mtime; } catch { return 0; }
+    });
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify(jobs));
     return;
   }
 
@@ -212,29 +267,29 @@ const httpServer = http.createServer((req, res) => {
     const outputFile = path.join(OUTPUT_DIR, relPath);
     if (fs.existsSync(outputFile) && fs.statSync(outputFile).isFile()) {
       const ext = path.extname(outputFile).toLowerCase();
-      res.writeHead(200, {
-        "Content-Type": MIME_TYPES[ext] || "application/octet-stream",
-        "Content-Length": fs.statSync(outputFile).size,
-      });
-      fs.createReadStream(outputFile).pipe(res);
+      serveFile(req, res, outputFile, MIME_TYPES[ext] || "application/octet-stream");
       return;
     }
   }
 
-  // Serve UI static files
+  // Serve UI static files (with range support for audio)
   const fullPath = path.join(UI_DIR, filePath);
   if (fs.existsSync(fullPath) && fs.statSync(fullPath).isFile()) {
     const ext = path.extname(fullPath).toLowerCase();
-    const content = fs.readFileSync(fullPath);
-    res.writeHead(200, {
-      "Content-Type": MIME_TYPES[ext] || "text/plain",
-      "Content-Length": content.length,
-    });
-    res.end(content);
-  } else {
-    res.writeHead(200, { "Content-Type": "text/html" });
-    res.end(fs.readFileSync(path.join(UI_DIR, "index.html")));
+    const mime = MIME_TYPES[ext] || "text/plain";
+    if (ext === ".wav" || ext === ".mid" || ext === ".mp3") {
+      serveFile(req, res, fullPath, mime);
+    } else {
+      const content = fs.readFileSync(fullPath);
+      res.writeHead(200, { "Content-Type": mime, "Content-Length": content.length });
+      res.end(content);
+    }
+    return;
   }
+
+  // Fallback: serve index.html
+  res.writeHead(200, { "Content-Type": "text/html" });
+  res.end(fs.readFileSync(path.join(UI_DIR, "index.html")));
 });
 
 // ── Find pi binary ─────────────────────────────────────
@@ -280,7 +335,18 @@ function findPiBinary() {
 
 // ── Spawn pi and stream JSON events ────────────────────
 
-function spawnPiAndStream(jobId, prompt, ws) {
+function spawnPiAndStream(jobId, prompt, ws, sessionId) {
+  if (DRY_RUN) {
+    console.log(`[DRY RUN] Would spawn pi with session ${sessionId || `nbeat_${jobId}`}`);
+    ws.send(JSON.stringify({
+      type: "done",
+      jobId,
+      workDir: JOBS.get(jobId)?.workDir || "",
+      files: [],
+      message: "🧪 Dry run — prompt logged above. Set NBEAT_DRY_RUN=0 to execute.",
+    }));
+    return;
+  }
   const piBin = findPiBinary();
   if (!piBin) {
     ws.send(JSON.stringify({
@@ -304,6 +370,7 @@ function spawnPiAndStream(jobId, prompt, ws) {
 
   const child = spawn(piBin, [
     "--mode", "json",
+    "--session-id", sessionId || `nbeat_${jobId}`,
     "-e", nbeatExt,
     "-p", prompt,
   ], {
@@ -441,6 +508,7 @@ function spawnPiAndStream(jobId, prompt, ws) {
     ws.send(JSON.stringify({
       type: "done",
       jobId,
+      workDir: job.workDir,
       files,
       prompt: promptText || null,
       message: code === 0
@@ -533,6 +601,39 @@ function buildNBeatPrompt(style, template, workDir) {
   return beatmakestep;
 }
 
+// ── Build the Refine prompt ────────────────────────────
+
+function buildRefinePrompt(feedback, workDir) {
+  const isWin = process.platform === "win32";
+  const pythonCmd = isWin ? "python" : "python3";
+  const kbDir = path.join(NBEAT_DIR, "skills", "nbeat", "meta-music-skill");
+
+  return `# 🔄 修改 Beat
+
+## 反馈
+${feedback}
+
+## 上一版文件（必须先读取）
+- ${workDir}/Beat_Design.md
+- ${workDir}/generate_beat.py
+
+## 知识库（按需参考，涉及元技巧修改时才读）
+- ${kbDir.replace(/\\/g, "/")}/A_元技巧与算子目录.md
+- ${kbDir.replace(/\\/g, "/")}/B_参数值空间.md
+- ${kbDir.replace(/\\/g, "/")}/C_复合元技巧与复合算子目录.md
+- ${kbDir.replace(/\\/g, "/")}/D_复合算子参数值空间.md
+
+## 步骤
+1. read Beat_Design.md 和 generate_beat.py
+2. 如果反馈涉及元技巧调整，read 对应知识库文件
+3. 根据反馈修改 Beat_Design.md
+4. 修改 generate_beat.py 匹配新设计
+5. 执行 ${pythonCmd} generate_beat.py 生成新 WAV
+
+直接开始！
+`;
+}
+
 // ── WebSocket Server ───────────────────────────────────
 const { WebSocketServer } = require("ws");
 const wss = new WebSocketServer({ port: WS_PORT });
@@ -579,7 +680,9 @@ wss.on("connection", (ws) => {
 
       console.log(`[job ${currentJobId}] Style: "${style}"${template ? ` Template: ${template}` : ""}`);
       console.log(`[job ${currentJobId}] Work dir: ${job.workDir}`);
-      console.log(`[job ${currentJobId}] Prompt preview (first 200 chars): ${promptText.slice(0, 200).replace(/\n/g, ' ')}`);
+      console.log(`[job ${currentJobId}] === FULL PROMPT (${promptText.length} chars) ===`);
+      console.log(promptText);
+      console.log(`[job ${currentJobId}] === END PROMPT ===`);
 
       ws.send(JSON.stringify({
         type: "progress",
@@ -589,7 +692,76 @@ wss.on("connection", (ws) => {
       }));
 
       // Execute: spawn pi with the prompt
-      spawnPiAndStream(currentJobId, promptText, ws);
+      const sessionId = "nbeat_" + path.basename(job.workDir).replace("job_", "");
+      job.sessionId = sessionId;
+      spawnPiAndStream(currentJobId, promptText, ws, sessionId);
+
+    } else if (msg.type === "refine") {
+      const feedback = (msg.feedback || "").trim();
+      let workDir = msg.workDir || null;
+
+      if (!feedback) {
+        ws.send(JSON.stringify({ type: "error", message: "请输入修改意见" }));
+        return;
+      }
+
+      // Find the work dir (from message, or from previous job)
+      if (!workDir) {
+        if (currentJobId && JOBS.has(currentJobId)) {
+          workDir = JOBS.get(currentJobId).workDir;
+        } else {
+          const jobDirs = fs.readdirSync(OUTPUT_DIR).filter(d => d.startsWith("job_"));
+          if (jobDirs.length > 0) {
+            workDir = path.join(OUTPUT_DIR, jobDirs[jobDirs.length - 1]);
+          }
+        }
+      }
+
+      if (!workDir || !fs.existsSync(path.join(workDir, "Beat_Design.md"))) {
+        ws.send(JSON.stringify({ type: "error", message: "未找到上一版文件，请先生成一个 beat" }));
+        return;
+      }
+
+      const sessionId = "nbeat_" + path.basename(workDir).replace("job_", "");
+
+      // Check if session file still exists (has LLM context from original creation)
+      const sessionFile = path.join(
+        process.env.HOME || "/tmp", ".pi", "agent", "sessions",
+        sessionId + ".jsonl"
+      );
+      const hasSession = fs.existsSync(sessionFile);
+      console.log(`[refine] Session ${sessionId}: ${hasSession ? "found" : "not found"}`);
+
+      currentJobId = newJob(feedback, null);
+      const job = JOBS.get(currentJobId);
+
+      // hasSession → light refine (LLM has KB context from history)
+      // no session → full workflow (LLM needs KB + beatmakestep)
+      const promptText = hasSession
+        ? buildRefinePrompt(feedback, workDir)
+        : buildNBeatPrompt(
+            `基于已有 Beat 修改，先 read 旧文件再按工作流重做：\n- 设计: ${workDir}/Beat_Design.md\n- 代码: ${workDir}/generate_beat.py\n\n用户意见: ${feedback}`,
+            null, workDir
+          );
+
+      const promptPath = path.join(job.workDir, "nbeat_prompt.md");
+      fs.writeFileSync(promptPath, promptText, "utf-8");
+
+      console.log(`[job ${currentJobId}] Refine: "${feedback}"`);
+      console.log(`[job ${currentJobId}] Session: ${sessionId}, exists: ${hasSession}`);
+      console.log(`[job ${currentJobId}] === REFINE PROMPT (${promptText.length} chars) ===`);
+      console.log(promptText);
+      console.log(`[job ${currentJobId}] === END REFINE PROMPT ===`);
+      console.log(`[job ${currentJobId}] Prev work dir: ${workDir}`);
+
+      ws.send(JSON.stringify({
+        type: "progress",
+        text: `🔄 基于上一版修改: ${feedback}`,
+        stage: "🔄 Refine",
+        jobId: currentJobId,
+      }));
+
+      spawnPiAndStream(currentJobId, promptText, ws, sessionId);
 
     } else if (msg.type === "ping") {
       ws.send(JSON.stringify({ type: "pong" }));
